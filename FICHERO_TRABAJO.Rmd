@@ -105,14 +105,28 @@ knitr::include_graphics("figure/logoETSE.png")
 ```
 
 
-# Apartado I
+# IMPORTACIÓN DE LOS DATOS
 
 Los ficheros ya están en una carpeta llamada 'data'
 
 
 
 ```{r}
-
+library(readr)
+cadiz3 <- read_csv("data/cadiz3.csv", col_types = cols(dateObserved = col_date(format = "%Y-%m-%d")))
+cadiz16 <- read_csv("data/cadiz16.csv", col_types = cols(dateObserved = col_date(format = "%Y-%m-%d")))
+carles34 <- read_csv("data/carles34.csv", col_types = cols(dateObserved = col_date(format = "%Y-%m-%d")))
+cuba3 <- read_csv("data/cuba3.csv", col_types = cols(dateObserved = col_date(format = "%Y-%m-%d")))
+doctor_serrano <- read_csv("data/doctor_serrano.csv", col_types = cols(dateObserved = col_date(format = "%Y-%m-%d")))
+general_prim <- read_csv("data/general_prim.csv", col_types = cols(dateObserved = col_date(format = "%Y-%m-%d")))
+maestro_jose <- read_csv("data/maestro_jose.csv", col_types = cols(dateObserved = col_date(format = "%Y-%m-%d")))
+puerto21 <- read_csv("data/puerto21.csv", col_types = cols(dateObserved = col_date(format = "%Y-%m-%d")))
+reina_maria <- read_csv("data/reina_maria.csv", col_types = cols(dateObserved = col_date(format = "%Y-%m-%d")))
+sueca2 <- read_csv("data/sueca2.csv", col_types = cols(dateObserved = col_date(format = "%Y-%m-%d")))
+sueca32 <- read_csv("data/sueca32.csv", col_types = cols(dateObserved = col_date(format = "%Y-%m-%d")))
+sueca61 <- read_csv("data/sueca61.csv", col_types = cols(dateObserved = col_date(format = "%Y-%m-%d")))
+sueca_denia <- read_csv("data/sueca-denia.csv", col_types = cols(dateObserved = col_date(format = "%Y-%m-%d")))
+vivons_cadiz <- read_csv("data/vivons_cadiz.csv", col_types = cols(dateObserved = col_date(format = "%Y-%m-%d")))
 
 
 ```
