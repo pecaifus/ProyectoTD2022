@@ -73,7 +73,7 @@ El siguiente bloque, al no especificar opciones del *chunk* usa la configuració
 
 # Especificamos las librerías necesarias en esta lista
 
-packages = c("tidyverse","knitr")
+packages = c("tidyverse","knitr",'readr','lubridate','dplyr','tidyr')
 
 #use this function to check if each package is on the local machine
 #if a package is installed, it will be loaded
@@ -131,4 +131,14 @@ vivons_cadiz <- read_csv("data/vivons_cadiz.csv", col_types = cols(dateObserved 
 
 ```
 
-# 
+# UNION DE LOS DATOS EN UN SOLO DATA FRAME
+
+```{r}
+library(dplyr)
+sonido_tidy<-bind_rows(cadiz16,cadiz3,carles34,cuba3,doctor_serrano,general_prim
+                       ,maestro_jose,puerto21,reina_maria,sueca_denia,sueca2,
+                       sueca32,sueca61,vivons_cadiz)
+head(sonido_tidy)
+tail(sonido_tidy)
+```
+
