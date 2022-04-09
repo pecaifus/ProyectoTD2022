@@ -1,6 +1,6 @@
 ---
 title: "Fichero de trabajo Proyecto TD 2022"
-author: "Pere Caimari Fuster"
+author: "Pere Caimari Fuster, Enrique Sayas Bailach"
 date: '`r Sys.Date()`'
 output:
   html_document:
