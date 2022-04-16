@@ -73,7 +73,7 @@ El siguiente bloque, al no especificar opciones del *chunk* usa la configuració
 
 # Especificamos las librerías necesarias en esta lista
 
-packages = c("tidyverse","knitr",'readr','lubridate','dplyr','tidyr')
+packages = c("tidyverse","knitr",'readr','lubridate','dplyr','tidyr', 'ggplot')
 
 #use this function to check if each package is on the local machine
 #if a package is installed, it will be loaded
@@ -156,14 +156,36 @@ sonido_tidy<-bind_rows(cadiz16,cadiz3,carles34,cuba3,doctor_serrano,general_prim
 sonido_tidy <- sonido_tidy %>% select(6:12)
 head(sonido_tidy)
 tail(sonido_tidy)
-summary(sonido_tidy)
 ```
 
 
 # Cambiamos los nombres de las variables
 
+Damos nuevos nombres a las variables que nos interesan. Los nombres son los siguientes:
+
+LAeq<- Nivel sonoro continuo (NSC)
+LAeq_d <- Sonido desde las 7 hasta las 19 (7-19)
+LAeq_den <- Sonido día-tarde-noche, es utilizado para determinar la molestia vinculada a la exposición al ruido. (SDTN)
+LAeq_e<- Sonido 19 hasta las 23 horas. (19-23)
+LAeq_n<- Sonido desde las 23 hasta las 7 horas. (23-7)
+dateObserved <- Fecha de observación (Fecha)
+
+
 ```{r}
-variables <- c("NSC", "7-19", "SDTN", "19-23", "23-7",  "Fecha", "CALLE")
+variables <- c("NSC", "S7_19", "SDTN", "S19_23", "S23_7",  "Fecha", "CALLE")
 names(sonido_tidy) <- variables
+summary(sonido_tidy)
+```
+
+# Análisis exploratorio de los datos
+
+En este apartado vamos a estudiar la estructura interna de los datos.
+
+```{r}
+ggplot(sonido_tidy, aes(x = CALLE, y = SDTN)) + geom_boxplot()
+ggplot(sonido_tidy, aes(x = CALLE, y = S7_19)) + geom_boxplot()
+ggplot(sonido_tidy, aes(x = CALLE, y = NSC)) + geom_boxplot()
+ggplot(sonido_tidy, aes(x = CALLE, y = S19_23)) + geom_boxplot()
+ggplot(sonido_tidy, aes(x = CALLE, y = S23_7)) + geom_boxplot()
 ```
 
