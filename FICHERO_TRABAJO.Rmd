@@ -101,7 +101,7 @@ search()
 Podemos especificar parámetros de tamaño y ubicación en el *chunk*
 
 ```{r rmarkdown, echo=FALSE,include=FALSE, out.width='30%', fig.align='center', fig.cap='Logo ETSE (desde archivo PNG).'}
-knitr::include_graphics("figure/logoETSE.png")
+#knitr::include_graphics("figure/logoETSE.png")
 ```
 
 
@@ -114,19 +114,33 @@ Los ficheros ya están en una carpeta llamada 'data'
 ```{r}
 library(readr)
 cadiz3 <- read_csv("data/cadiz3.csv", col_types = cols(dateObserved = col_date(format = "%Y-%m-%d")))
+cadiz3 <- cadiz3 %>% mutate(calle = "cadiz3")
 cadiz16 <- read_csv("data/cadiz16.csv", col_types = cols(dateObserved = col_date(format = "%Y-%m-%d")))
+cadiz16 <- cadiz16 %>% mutate(calle = "cadiz16")
 carles34 <- read_csv("data/carles34.csv", col_types = cols(dateObserved = col_date(format = "%Y-%m-%d")))
+carles34 <- carles34 %>% mutate(calle = "carles34")
 cuba3 <- read_csv("data/cuba3.csv", col_types = cols(dateObserved = col_date(format = "%Y-%m-%d")))
+cuba3 <- cuba3 %>% mutate(calle = "cuba3")
 doctor_serrano <- read_csv("data/doctor_serrano.csv", col_types = cols(dateObserved = col_date(format = "%Y-%m-%d")))
+doctor_serrano <- doctor_serrano %>% mutate(calle = "doctor_serrano")
 general_prim <- read_csv("data/general_prim.csv", col_types = cols(dateObserved = col_date(format = "%Y-%m-%d")))
+general_prim <- general_prim %>% mutate(calle = "general_prim")
 maestro_jose <- read_csv("data/maestro_jose.csv", col_types = cols(dateObserved = col_date(format = "%Y-%m-%d")))
+maestro_jose <- maestro_jose %>% mutate(calle = "maestro_jose")
 puerto21 <- read_csv("data/puerto21.csv", col_types = cols(dateObserved = col_date(format = "%Y-%m-%d")))
+puerto21 <- puerto21 %>% mutate(calle = "puerto21")
 reina_maria <- read_csv("data/reina_maria.csv", col_types = cols(dateObserved = col_date(format = "%Y-%m-%d")))
+reina_maria <- reina_maria %>% mutate(calle = "reina_maira")
 sueca2 <- read_csv("data/sueca2.csv", col_types = cols(dateObserved = col_date(format = "%Y-%m-%d")))
+sueca2 <- sueca2 %>% mutate(calle = "sueca2")
 sueca32 <- read_csv("data/sueca32.csv", col_types = cols(dateObserved = col_date(format = "%Y-%m-%d")))
+sueca32 <- sueca32 %>% mutate(calle = "sueca32")
 sueca61 <- read_csv("data/sueca61.csv", col_types = cols(dateObserved = col_date(format = "%Y-%m-%d")))
+sueca61 <- sueca61 %>% mutate(calle = "sueca61")
 sueca_denia <- read_csv("data/sueca-denia.csv", col_types = cols(dateObserved = col_date(format = "%Y-%m-%d")))
+sueca_denia <- sueca_denia %>% mutate(calle = "sueca_denia")
 vivons_cadiz <- read_csv("data/vivons_cadiz.csv", col_types = cols(dateObserved = col_date(format = "%Y-%m-%d")))
+vivons_cadiz <- vivons_cadiz %>% mutate(calle = "vivons_cadiz")
 
 
 ```
@@ -138,7 +152,18 @@ library(dplyr)
 sonido_tidy<-bind_rows(cadiz16,cadiz3,carles34,cuba3,doctor_serrano,general_prim
                        ,maestro_jose,puerto21,reina_maria,sueca_denia,sueca2,
                        sueca32,sueca61,vivons_cadiz)
+
+sonido_tidy <- sonido_tidy %>% select(6:12)
 head(sonido_tidy)
 tail(sonido_tidy)
+summary(sonido_tidy)
+```
+
+
+# Cambiamos los nombres de las variables
+
+```{r}
+variables <- c("NSC", "7-19", "SDTN", "19-23", "23-7",  "Fecha", "CALLE")
+names(sonido_tidy) <- variables
 ```
 
