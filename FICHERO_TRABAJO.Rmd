@@ -73,7 +73,7 @@ El siguiente bloque, al no especificar opciones del *chunk* usa la configuració
 
 # Especificamos las librerías necesarias en esta lista
 
-packages = c("tidyverse","knitr",'readr','lubridate','dplyr','tidyr', 'ggplot')
+packages = c("tidyverse","knitr",'readr','lubridate','dplyr','tidyr', 'ggplot2')
 
 #use this function to check if each package is on the local machine
 #if a package is installed, it will be loaded
@@ -187,5 +187,13 @@ ggplot(sonido_tidy, aes(x = CALLE, y = S7_19)) + geom_boxplot()
 ggplot(sonido_tidy, aes(x = CALLE, y = NSC)) + geom_boxplot()
 ggplot(sonido_tidy, aes(x = CALLE, y = S19_23)) + geom_boxplot()
 ggplot(sonido_tidy, aes(x = CALLE, y = S23_7)) + geom_boxplot()
+```
+
+# Creación de los estadisticos 
+
+```{r}
+estadisticos<- sonido_tidy%>% filter(CALLE == 'cadiz16') %>% select(NSC:S23_7)  %>% summarise_at(list(min=min, max=max, med=mean , mediana=median,sd=sd))
+
+quantiles <- estadistico %>% group_by(asignaturas)  %>% summarize(quant25 = quantile(notas,probs = q[1],na.rm = T),quant75 = quantile(notas,probs = q[3],na.rm = T))
 ```
 
