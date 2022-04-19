@@ -199,10 +199,10 @@ En este apartado vamos a estudiar la estructura interna de los datos.
 
 ```{r}
 ggplot(sonido_tidy, aes(x = CALLE, y = SDTN,col = CALLE)) + geom_boxplot()
-ggplot(sonido_tidy, aes(x = CALLE, y = S7_19)) + geom_boxplot()
-ggplot(sonido_tidy, aes(x = CALLE, y = NSC)) + geom_boxplot()
-ggplot(sonido_tidy, aes(x = CALLE, y = S19_23)) + geom_boxplot()
-ggplot(sonido_tidy, aes(x = CALLE, y = S23_7)) + geom_boxplot()
+ggplot(sonido_tidy, aes(x = CALLE, y = S7_19,col = CALLE)) + geom_boxplot()
+ggplot(sonido_tidy, aes(x = CALLE, y = NSC,col = CALLE)) + geom_boxplot()
+ggplot(sonido_tidy, aes(x = CALLE, y = S19_23,col = CALLE)) + geom_boxplot()
+ggplot(sonido_tidy, aes(x = CALLE, y = S23_7,col = CALLE)) + geom_boxplot()
 sonido_tidy %>% select(S7_19,S19_23,S23_7) %>% pivot_longer(names_to = 'horas', values_to = 'sonido',S7_19:S23_7) %>% group_by(horas) %>%  ggplot(aes(x = sonido)) +
   geom_histogram(fill = "aquamarine", colour = "darkblue", size = .3) +
   scale_y_continuous( name = "Num. Oservaciones" ) +
