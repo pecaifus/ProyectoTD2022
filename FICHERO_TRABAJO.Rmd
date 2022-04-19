@@ -1,6 +1,6 @@
 ---
 title: "Fichero de trabajo Proyecto TD 2022"
-author: "Pere Caimari Fuster, Enrique Sayas Bailach, Lucas Contreras Vilar, Diego Martin Soler"
+author: "Pere Caimari Fuster, Enrique Sayas Bailach, Lucas Contreras Vilar, Diego Martin Soler, Pablo Gómez Martínez"
 date: '`r Sys.Date()`'
 output:
   html_document:
@@ -176,13 +176,29 @@ variables <- c("NSC", "S7_19", "SDTN", "S19_23", "S23_7",  "Fecha", "CALLE")
 names(sonido_tidy) <- variables
 summary(sonido_tidy)
 ```
+# IMPUTACION DE LOS DATOS
+
+En la observación del summary hemos observado que los datos contienen algunas inconsistencias como es el hecho de que aparecen valores infinitos. Para solucionar este problema y que los estadísticos que realizaremos a posteriori tengan un valor más próximo al real, realizaremos una imputación cambiando el valor inf por el máximo de esa calle para variable.
+
+```{r}
+sonido_tidy%>% filter(S19_23 == Inf|S7_19 == Inf) 
+```
+
+Ahora como podemos observar los problemas se encuentran en las calles cadiz16 y maestro jose, procedemos a la imputación.
+
+```{r}
+maximo<- sonido_tidy%>% filter(CALLE == 'cadiz16'& S19_23 != Inf) %>% select(S19_23) %>% max()
+sonido_tidy$S19_23[sonido_tidy$S19_23==Inf]<- maximo
+maximo<- sonido_tidy%>% filter(CALLE == 'maestro_jose'& S7_19 != Inf) %>% select(S7_19) %>% max()
+sonido_tidy$S7_19[sonido_tidy$S7_19==Inf]<- maximo
+```
 
 # Análisis exploratorio de los datos
 
 En este apartado vamos a estudiar la estructura interna de los datos.
 
 ```{r}
-ggplot(sonido_tidy, aes(x = CALLE, y = SDTN)) + geom_boxplot()
+ggplot(sonido_tidy, aes(x = CALLE, y = SDTN,col = CALLE)) + geom_boxplot()
 ggplot(sonido_tidy, aes(x = CALLE, y = S7_19)) + geom_boxplot()
 ggplot(sonido_tidy, aes(x = CALLE, y = NSC)) + geom_boxplot()
 ggplot(sonido_tidy, aes(x = CALLE, y = S19_23)) + geom_boxplot()
@@ -192,8 +208,6 @@ ggplot(sonido_tidy, aes(x = CALLE, y = S23_7)) + geom_boxplot()
 # Creación de los estadisticos 
 
 ```{r}
-estadisticos<- sonido_tidy%>% filter(CALLE == 'cadiz16') %>% select(NSC:S23_7)  %>% summarise_at(list(min=min, max=max, med=mean , mediana=median,sd=sd))
-
-quantiles <- estadistico %>% group_by(asignaturas)  %>% summarize(quant25 = quantile(notas,probs = q[1],na.rm = T),quant75 = quantile(notas,probs = q[3],na.rm = T))
+sonido_tidy %>% select(NSC:S23_7)  %>% pivot_longer(names_to =  'tipo',values_to= 'sonido',NSC:S23_7) %>% group_by(tipo) %>% summarise_at(vars(sonido),list(min=min, max=max, med=mean , mediana=median,sd=sd))
 ```
 
