@@ -195,6 +195,20 @@ names(sonido_tidy) <- variables
 summary(sonido_tidy)
 ```
 
+Como podemos obervar no se encuentran valores perdidos en ninguna variable. Tenemos 5 variables de tipo numérico, una de tipo carácter (que se debe transformar a factor) y otra desconocida (que es de tipo fecha). Estas dos últimas se deben corregir.
+
+## Categoría de las variables
+
+Vamos a cambiar el tipo de variables de Fecha y Calle, La primera será de tipo fecha y la segunda de tipo factor, con tantos niveles como calles tenemos.
+
+```{r}
+sonido_tidy$Fecha <- ymd(sonido_tidy$Fecha)
+sonido_tidy$CALLE <- as.factor(sonido_tidy$CALLE)
+class(sonido_tidy$Fecha)
+class(sonido_tidy$CALLE)
+```
+
+
 ## Imputación de los datos
 
 En la observación del summary hemos observado que los datos contienen algunas inconsistencias como es el hecho de que aparecen valores infinitos. Para solucionar este problema y que los estadísticos que realizaremos a posteriori tengan un valor más próximo al real, realizaremos una imputación cambiando el valor inf por el máximo de esa calle para variable.
@@ -206,10 +220,14 @@ sonido_tidy%>% filter(S19_23 == Inf|S7_19 == Inf)
 Ahora como podemos observar los problemas se encuentran en las calles cadiz16 y maestro jose, procedemos a la imputación.
 
 ```{r}
-maximo<- sonido_tidy%>% filter(CALLE == 'cadiz16'& S19_23 != Inf) %>% select(S19_23) %>% max()
-sonido_tidy$S19_23[sonido_tidy$S19_23==Inf]<- maximo
-maximo<- sonido_tidy%>% filter(CALLE == 'maestro_jose'& S7_19 != Inf) %>% select(S7_19) %>% max()
-sonido_tidy$S7_19[sonido_tidy$S7_19==Inf]<- maximo
+maximo <- sonido_tidy %>%
+  filter(CALLE == 'cadiz16'& S19_23 != Inf) %>%
+  select(S19_23) %>% max()
+sonido_tidy$S19_23[sonido_tidy$S19_23==Inf] <- maximo
+maximo <- sonido_tidy%>%
+  filter(CALLE == 'maestro_jose'& S7_19 != Inf) %>%
+  select(S7_19) %>% max()
+sonido_tidy$S7_19[sonido_tidy$S7_19==Inf] <- maximo
 ```
 
 # Análisis exploratorio de los datos
