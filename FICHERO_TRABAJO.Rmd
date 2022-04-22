@@ -3,11 +3,11 @@ title: "Fichero de trabajo Proyecto TD 2022"
 author: "Pere Caimari Fuster, Enrique Sayas Bailach,Lucas Contreras Vilar, Diego Martin Soler, Pablo Gómez Martínez, Natalia Pons Valdelvira"
 date: '`r Sys.Date()`'
 output:
-  html_document:
-    echo: yes
-    number_sections: yes
-    theme: lumen
-    toc: yes
+  # html_document:
+  #   echo: yes
+  #   number_sections: yes
+  #   theme: lumen
+  #   toc: yes
   pdf_document:
     toc: yes
     toc_depth: 3
@@ -92,14 +92,15 @@ search()
 
 # Introducción del trabajo
 
+El objetivo de esta *tarea/trabajo/práctica* es realizar un estudio sobre los diferentes niveles sonoros captados por algunos detectores de ruido situados en varias calles del barrio de Rufaza (Valencia). Para ello, hemos descargado los datos de la página "https://www.valencia.es/dadesobertes/es/data/?groups=medio-ambiente" de los detectores ubicados en las siguientes calles:
 
-" El objetivo de esta *tarea/trabajo/práctica* es realizar el Proyecto que nos ha mandado Marcelino "
+Sueca-Denia, Cádiz 3, Cádiz 16, Cuba 3, Sueca 2, Sueca 32, Sueca 61, Carles, Cervera-Chaflán Reina Doña María, Carles Cervera 34, José Serrano-Salvador Abril, Vivons-Cádiz, Puerto Rico 21, Doctor Serrano 21, General Prim-Chaflán Donoso Cortés
+
 
 
 # Importación de los datos
 
-Los ficheros ya están en una carpeta llamada 'data'
-
+Los ficheros ya están descargados en una carpeta llamada 'data'. A partir de la librería 'readr' los importaremos a nuestro entorno de trabajo. Además vamos a aprovechar este paso para añadirle a cada uno de los dataframe una columna llamada 'calle' que indique la calle de la que proviene cada obervación. Esto nos será muy útil más adelante
 
 
 ```{r}
@@ -152,11 +153,14 @@ vivons_cadiz <- vivons_cadiz %>% mutate(calle = "vivons_cadiz")
 
 # Unión de los datos en un solo dataframe
 
+Ahora vamos a usar la función bind_rows de la librería 'dplyr' para unir todos los data frames anteriores en uno solo. Esto es posible ya que todos poseen las mismas variables, por tanto, lo que estamos haciendo es unir las observaciones una debajo de otra
+
 ```{r}
 library(dplyr)
-sonido_tidy<-bind_rows(cadiz16,cadiz3,carles34,cuba3,doctor_serrano,general_prim
-                       ,maestro_jose,puerto21,reina_maria,sueca_denia,sueca2,
-                       sueca32,sueca61,vivons_cadiz)
+sonido_tidy<-bind_rows(cadiz16, cadiz3, carles34, cuba3, 
+                       doctor_serrano, general_prim, maestro_jose, 
+                       puerto21, reina_maria, sueca_denia,sueca2, 
+                       sueca32, sueca61, vivons_cadiz)
 
 sonido_tidy <- sonido_tidy %>% select(6:12)
 head(sonido_tidy)
@@ -164,20 +168,25 @@ tail(sonido_tidy)
 ```
 
 
-# Cambiamos los nombres de las variables
+# Tansformación a tidy dataset
 
-Damos nuevos nombres a las variables que nos interesan. Los nombres son los siguientes:
+## Cambiamos los nombres de las variables
 
-LAeq<- Nivel sonoro continuo (NSC)
+Para poder entender mejor qué información contiene nuestros datos nos hemos fijado en la página web de origen y nos hemos dado cuenta de qué nos proporciona cada variable. Les cambiaremos los nombres para poder trabajar de forma más cómoda:
 
-LAeq_d <- Sonido desde las 7 hasta las 19 (7-19)
+NSC <- Nivel sonoro continuo (LAeq)
 
-LAeq_den <- Sonido día-tarde-noche, es utilizado para determinar la molestia vinculada a la exposición al ruido. (SDTN)
+7-19 <- Sonido desde las 7 hasta las 19 (LAeq_d)
 
-LAeq_e<- Sonido 19 hasta las 23 horas. (19-23)
+SDTN <- Sonido día-tarde-noche, es utilizado para determinar la molestia vinculada a la exposición al ruido. (LAeq_den)
 
-LAeq_n<- Sonido desde las 23 hasta las 7 horas. (23-7)
-dateObserved <- Fecha de observación (Fecha)
+19-23 <- Sonido 19 hasta las 23 horas. (LAeq_e)
+
+23-7 <- Sonido desde las 23 hasta las 7 horas. (LAeq_n)
+
+Fecha <- Fecha de observación (dateObserved)
+
+También haremos un primer resumen estadístico para ver una primera impresión acerca de los datos.
 
 
 ```{r}
@@ -186,7 +195,7 @@ names(sonido_tidy) <- variables
 summary(sonido_tidy)
 ```
 
-# Imputación de los datos
+## Imputación de los datos
 
 En la observación del summary hemos observado que los datos contienen algunas inconsistencias como es el hecho de que aparecen valores infinitos. Para solucionar este problema y que los estadísticos que realizaremos a posteriori tengan un valor más próximo al real, realizaremos una imputación cambiando el valor inf por el máximo de esa calle para variable.
 
@@ -225,10 +234,13 @@ sonido_tidy %>% select(S7_19,S19_23,S23_7) %>%
 # Creación de los estadisticos 
 
 ```{r}
-sonido_tidy %>% select(NSC:S23_7)  %>%
+library(kableExtra)
+tabla <- sonido_tidy %>% select(NSC:S23_7)  %>%
   pivot_longer(names_to =  'tipo',values_to= 'sonido',NSC:S23_7) %>%
   group_by(tipo) %>% 
   summarise_at(vars(sonido),
                list(min=min, max=max, med=mean , mediana=median,sd=sd))
+tabla %>% kable() %>% kable_material()
+
 ```
 
