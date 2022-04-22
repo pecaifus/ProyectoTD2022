@@ -262,3 +262,9 @@ tabla %>% kable() %>% kable_material()
 
 ```
 
+# Preguntas a resolver
+
+Una vez ya hemos hecho un primer análisis de los datos, sabemos cómo están organizados y distribuidos. Debemos plantearnos las preguntas que queramos resolver. 
+-¿Cuál es la calle más/menos ruidosa?
+-¿Cuáles son las horas en las que hay más/menos ruido?
+-¿De qué forma aumenta el ruido durante los días festivos (Navidades, Fallas, etc)?
