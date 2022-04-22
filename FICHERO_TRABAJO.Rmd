@@ -1,6 +1,6 @@
 ---
 title: "Fichero de trabajo Proyecto TD 2022"
-author: "Pere Caimari Fuster, Enrique Sayas Bailach, Lucas Contreras Vilar, Diego Martin Soler, Pablo Gómez Martínez, Natalia Pons Valdelvira"
+author: "Pere Caimari Fuster, Enrique Sayas Bailach,Lucas Contreras Vilar, Diego Martin Soler, Pablo Gómez Martínez, Natalia Pons Valdelvira"
 date: '`r Sys.Date()`'
 output:
   html_document:
@@ -48,7 +48,7 @@ library(knitr)
 options(width = 100)
 
 # Opciones generales de los chucks. Se utilizarán salvo cambios en el chunk
-opts_chunk$set(echo=F, message = F, error = F, warning = F, comment = NA, fig.align = 'center', dpi = 200, tidy = F, cache.path = '.cache/', fig.path = './figura/')
+opts_chunk$set(echo=T, message = F, error = F, warning = F, comment = NA, fig.align = 'center', dpi = 200, tidy = F, cache.path = '.cache/', fig.path = './figura/')
 
 # Opciones generales de dígitos cuando se incluyen tablas
 #options(xtable.type = 'html')
@@ -60,7 +60,6 @@ knit_hooks$set(inline = function(x) {
     paste(as.character(x), collapse = ', ')
   }
 })
-#knit_hooks$set(plot = knitr:::hook_plot_html)
 ```
 
 # Instalación automática de paquetes
@@ -69,7 +68,7 @@ Especificar las librerías necesarias para ejecutar el código en la variable **
 
 El siguiente bloque, al no especificar opciones del *chunk* usa la configuración por defecto.
 
-```{r}
+```{r echo = F}
 
 # Especificamos las librerías necesarias en esta lista
 
@@ -96,16 +95,8 @@ search()
 
 " El objetivo de esta *tarea/trabajo/práctica* es realizar el Proyecto que nos ha mandado Marcelino "
 
-### Subsubapartado  (nivel 3 \#\#\#). Cómo incluir figuras
 
-Podemos especificar parámetros de tamaño y ubicación en el *chunk*
-
-```{r rmarkdown, echo=FALSE,include=FALSE, out.width='30%', fig.align='center', fig.cap='Logo ETSE (desde archivo PNG).'}
-#knitr::include_graphics("figure/logoETSE.png")
-```
-
-
-# IMPORTACIÓN DE LOS DATOS
+# Importación de los datos
 
 Los ficheros ya están en una carpeta llamada 'data'
 
@@ -113,39 +104,53 @@ Los ficheros ya están en una carpeta llamada 'data'
 
 ```{r}
 library(readr)
-cadiz3 <- read_csv("data/cadiz3.csv", col_types = cols(dateObserved = col_date(format = "%Y-%m-%d")))
+cadiz3 <- read_csv("data/cadiz3.csv", col_types = cols
+                   (dateObserved = col_date(format = "%Y-%m-%d")))
 cadiz3 <- cadiz3 %>% mutate(calle = "cadiz3")
-cadiz16 <- read_csv("data/cadiz16.csv", col_types = cols(dateObserved = col_date(format = "%Y-%m-%d")))
+cadiz16 <- read_csv("data/cadiz16.csv", col_types = cols
+                    (dateObserved = col_date(format = "%Y-%m-%d")))
 cadiz16 <- cadiz16 %>% mutate(calle = "cadiz16")
-carles34 <- read_csv("data/carles34.csv", col_types = cols(dateObserved = col_date(format = "%Y-%m-%d")))
+carles34 <- read_csv("data/carles34.csv", col_types = cols
+                     (dateObserved = col_date(format = "%Y-%m-%d")))
 carles34 <- carles34 %>% mutate(calle = "carles34")
-cuba3 <- read_csv("data/cuba3.csv", col_types = cols(dateObserved = col_date(format = "%Y-%m-%d")))
+cuba3 <- read_csv("data/cuba3.csv", col_types = cols
+                  (dateObserved = col_date(format = "%Y-%m-%d")))
 cuba3 <- cuba3 %>% mutate(calle = "cuba3")
-doctor_serrano <- read_csv("data/doctor_serrano.csv", col_types = cols(dateObserved = col_date(format = "%Y-%m-%d")))
+doctor_serrano <- read_csv("data/doctor_serrano.csv", col_types = cols
+                           (dateObserved = col_date(format = "%Y-%m-%d")))
 doctor_serrano <- doctor_serrano %>% mutate(calle = "doctor_serrano")
-general_prim <- read_csv("data/general_prim.csv", col_types = cols(dateObserved = col_date(format = "%Y-%m-%d")))
+general_prim <- read_csv("data/general_prim.csv", col_types = cols
+                         (dateObserved = col_date(format = "%Y-%m-%d")))
 general_prim <- general_prim %>% mutate(calle = "general_prim")
-maestro_jose <- read_csv("data/maestro_jose.csv", col_types = cols(dateObserved = col_date(format = "%Y-%m-%d")))
+maestro_jose <- read_csv("data/maestro_jose.csv", col_types = cols
+                         (dateObserved = col_date(format = "%Y-%m-%d")))
 maestro_jose <- maestro_jose %>% mutate(calle = "maestro_jose")
-puerto21 <- read_csv("data/puerto21.csv", col_types = cols(dateObserved = col_date(format = "%Y-%m-%d")))
+puerto21 <- read_csv("data/puerto21.csv", col_types = cols
+                     (dateObserved = col_date(format = "%Y-%m-%d")))
 puerto21 <- puerto21 %>% mutate(calle = "puerto21")
-reina_maria <- read_csv("data/reina_maria.csv", col_types = cols(dateObserved = col_date(format = "%Y-%m-%d")))
+reina_maria <- read_csv("data/reina_maria.csv", col_types = cols
+                        (dateObserved = col_date(format = "%Y-%m-%d")))
 reina_maria <- reina_maria %>% mutate(calle = "reina_maira")
-sueca2 <- read_csv("data/sueca2.csv", col_types = cols(dateObserved = col_date(format = "%Y-%m-%d")))
+sueca2 <- read_csv("data/sueca2.csv", col_types = cols
+                   (dateObserved = col_date(format = "%Y-%m-%d")))
 sueca2 <- sueca2 %>% mutate(calle = "sueca2")
-sueca32 <- read_csv("data/sueca32.csv", col_types = cols(dateObserved = col_date(format = "%Y-%m-%d")))
+sueca32 <- read_csv("data/sueca32.csv", col_types = cols
+                    (dateObserved = col_date(format = "%Y-%m-%d")))
 sueca32 <- sueca32 %>% mutate(calle = "sueca32")
-sueca61 <- read_csv("data/sueca61.csv", col_types = cols(dateObserved = col_date(format = "%Y-%m-%d")))
+sueca61 <- read_csv("data/sueca61.csv", col_types = cols
+                    (dateObserved = col_date(format = "%Y-%m-%d")))
 sueca61 <- sueca61 %>% mutate(calle = "sueca61")
-sueca_denia <- read_csv("data/sueca-denia.csv", col_types = cols(dateObserved = col_date(format = "%Y-%m-%d")))
+sueca_denia <- read_csv("data/sueca-denia.csv", col_types = cols
+                        (dateObserved = col_date(format = "%Y-%m-%d")))
 sueca_denia <- sueca_denia %>% mutate(calle = "sueca_denia")
-vivons_cadiz <- read_csv("data/vivons_cadiz.csv", col_types = cols(dateObserved = col_date(format = "%Y-%m-%d")))
+vivons_cadiz <- read_csv("data/vivons_cadiz.csv", col_types = cols
+                         (dateObserved = col_date(format = "%Y-%m-%d")))
 vivons_cadiz <- vivons_cadiz %>% mutate(calle = "vivons_cadiz")
 
 
 ```
 
-# UNION DE LOS DATOS EN UN SOLO DATA FRAME
+# Unión de los datos en un solo dataframe
 
 ```{r}
 library(dplyr)
@@ -164,9 +169,13 @@ tail(sonido_tidy)
 Damos nuevos nombres a las variables que nos interesan. Los nombres son los siguientes:
 
 LAeq<- Nivel sonoro continuo (NSC)
+
 LAeq_d <- Sonido desde las 7 hasta las 19 (7-19)
+
 LAeq_den <- Sonido día-tarde-noche, es utilizado para determinar la molestia vinculada a la exposición al ruido. (SDTN)
+
 LAeq_e<- Sonido 19 hasta las 23 horas. (19-23)
+
 LAeq_n<- Sonido desde las 23 hasta las 7 horas. (23-7)
 dateObserved <- Fecha de observación (Fecha)
 
@@ -176,7 +185,8 @@ variables <- c("NSC", "S7_19", "SDTN", "S19_23", "S23_7",  "Fecha", "CALLE")
 names(sonido_tidy) <- variables
 summary(sonido_tidy)
 ```
-# IMPUTACION DE LOS DATOS
+
+# Imputación de los datos
 
 En la observación del summary hemos observado que los datos contienen algunas inconsistencias como es el hecho de que aparecen valores infinitos. Para solucionar este problema y que los estadísticos que realizaremos a posteriori tengan un valor más próximo al real, realizaremos una imputación cambiando el valor inf por el máximo de esa calle para variable.
 
@@ -203,7 +213,9 @@ ggplot(sonido_tidy, aes(x = CALLE, y = S7_19,col = CALLE)) + geom_boxplot()
 ggplot(sonido_tidy, aes(x = CALLE, y = NSC,col = CALLE)) + geom_boxplot()
 ggplot(sonido_tidy, aes(x = CALLE, y = S19_23,col = CALLE)) + geom_boxplot()
 ggplot(sonido_tidy, aes(x = CALLE, y = S23_7,col = CALLE)) + geom_boxplot()
-sonido_tidy %>% select(S7_19,S19_23,S23_7) %>% pivot_longer(names_to = 'horas', values_to = 'sonido',S7_19:S23_7) %>% group_by(horas) %>%  ggplot(aes(x = sonido)) +
+sonido_tidy %>% select(S7_19,S19_23,S23_7) %>%
+  pivot_longer(names_to = 'horas', values_to = 'sonido',S7_19:S23_7) %>%
+  group_by(horas) %>%  ggplot(aes(x = sonido)) +
   geom_histogram(fill = "aquamarine", colour = "darkblue", size = .3) +
   scale_y_continuous( name = "Num. Oservaciones" ) +
   scale_x_continuous( name = "Sonido" ) +
@@ -213,6 +225,10 @@ sonido_tidy %>% select(S7_19,S19_23,S23_7) %>% pivot_longer(names_to = 'horas', 
 # Creación de los estadisticos 
 
 ```{r}
-sonido_tidy %>% select(NSC:S23_7)  %>% pivot_longer(names_to =  'tipo',values_to= 'sonido',NSC:S23_7) %>% group_by(tipo) %>% summarise_at(vars(sonido),list(min=min, max=max, med=mean , mediana=median,sd=sd))
+sonido_tidy %>% select(NSC:S23_7)  %>%
+  pivot_longer(names_to =  'tipo',values_to= 'sonido',NSC:S23_7) %>%
+  group_by(tipo) %>% 
+  summarise_at(vars(sonido),
+               list(min=min, max=max, med=mean , mediana=median,sd=sd))
 ```
 
