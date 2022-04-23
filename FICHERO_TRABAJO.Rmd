@@ -268,17 +268,21 @@ Una vez ya hemos hecho un primer análisis de los datos, sabemos cómo están or
 -¿Cuál es la calle más/menos ruidosa?
 ```{r}
 sonido_tidy %>% group_by(CALLE) %>% summarise(Nivel_sonoro_continuo_medio_maximo = mean(NSC)) %>% filter(Nivel_sonoro_continuo_medio_maximo == max(Nivel_sonoro_continuo_medio_maximo))
+
 sonido_tidy %>% group_by(CALLE) %>% summarise(Nivel_sonoro_continuo_medio_minimo = mean(NSC)) %>% filter(Nivel_sonoro_continuo_medio_minimo == min(Nivel_sonoro_continuo_medio_minimo))
 ```
 -¿Cuál es la calle que ha alcanzado el máximo/mínimo nivel de ruido?
 ```{r}
 sonido_tidy %>% group_by(CALLE) %>% summarise(Nivel_sonoro_continuo_maximo = max(NSC)) %>% filter(Nivel_sonoro_continuo_maximo == max(Nivel_sonoro_continuo_maximo))
+
 sonido_tidy %>% group_by(CALLE) %>% summarise(Nivel_sonoro_continuo_minimo = min(NSC)) %>% filter(Nivel_sonoro_continuo_minimo == min(Nivel_sonoro_continuo_minimo))
 ```
 
 -¿Cuáles son las horas en las que hay más/menos ruido?
 ```{r}
+sonido_tidy %>% gather(key = "horario", value = "nivel_sonido", c(S7_19,S19_23,S23_7)) %>% group_by(horario) %>% summarise(Nivel_sonoro_continuo_medio_maximo = mean(nivel_sonido)) %>% filter(Nivel_sonoro_continuo_medio_maximo == max(Nivel_sonoro_continuo_medio_maximo))
 
+sonido_tidy %>% gather(key = "horario", value = "nivel_sonido", c(S7_19,S19_23,S23_7)) %>% group_by(horario) %>% summarise(Nivel_sonoro_continuo_medio_minimo = mean(nivel_sonido)) %>% filter(Nivel_sonoro_continuo_medio_minimo == min(Nivel_sonoro_continuo_medio_minimo))
 ```
 
 -¿De qué forma aumenta el ruido durante los días festivos (Navidades, Fallas, etc)?
