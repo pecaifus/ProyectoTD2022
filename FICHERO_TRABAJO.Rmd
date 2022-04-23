@@ -1,23 +1,23 @@
 ---
 title: "Fichero de trabajo Proyecto TD 2022"
-author: "Pere Caimari Fuster, Enrique Sayas Bailach,Lucas Contreras Vilar, Diego Martin Soler, Pablo Gómez Martínez, Natalia Pons Valdelvira"
-date: '`r Sys.Date()`'
+author: Pere Caimari Fuster, Enrique Sayas Bailach,Lucas Contreras Vilar, Diego Martin
+  Soler, Pablo Gómez Martínez, Natalia Pons Valdelvira
+date: "`r Sys.Date()`"
 output:
-  # html_document:
-  #   echo: yes
-  #   number_sections: yes
-  #   theme: lumen
-  #   toc: yes
-  pdf_document:
+  html_document:
     toc: yes
-    toc_depth: 3
+    toc_depth: '3'
+    df_print: paged
   html_notebook:
     echo: yes
     number_sections: yes
     toc: yes
+  pdf_document:
+    toc: yes
+    toc_depth: 3
 params:
   lang: ES
-lang: "r switch(params$lang, ES = 'es-ES', EN = 'en-US')"
+lang: r switch(params$lang, ES = 'es-ES', EN = 'en-US')
 subtitle: Tratamiento de Datos. Grado en Ciencia de Datos- UV
 language:
   label:
@@ -264,7 +264,24 @@ tabla %>% kable() %>% kable_material()
 
 # Preguntas a resolver
 
-Una vez ya hemos hecho un primer análisis de los datos, sabemos cómo están organizados y distribuidos. Debemos plantearnos las preguntas que queramos resolver. 
+Una vez ya hemos hecho un primer análisis de los datos, sabemos cómo están organizados y distribuidos. Debemos plantearnos las preguntas que queramos resolver.
 -¿Cuál es la calle más/menos ruidosa?
+```{r}
+sonido_tidy %>% group_by(CALLE) %>% summarise(Nivel_sonoro_continuo_medio_maximo = mean(NSC)) %>% filter(Nivel_sonoro_continuo_medio_maximo == max(Nivel_sonoro_continuo_medio_maximo))
+sonido_tidy %>% group_by(CALLE) %>% summarise(Nivel_sonoro_continuo_medio_minimo = mean(NSC)) %>% filter(Nivel_sonoro_continuo_medio_minimo == min(Nivel_sonoro_continuo_medio_minimo))
+```
+-¿Cuál es la calle que ha alcanzado el máximo/mínimo nivel de ruido?
+```{r}
+
+```
+
 -¿Cuáles son las horas en las que hay más/menos ruido?
+```{r}
+
+```
+
 -¿De qué forma aumenta el ruido durante los días festivos (Navidades, Fallas, etc)?
+```{r}
+
+```
+
