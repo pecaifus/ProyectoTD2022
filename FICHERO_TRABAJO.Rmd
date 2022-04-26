@@ -131,7 +131,7 @@ puerto21 <- read_csv("data/puerto21.csv", col_types = cols
 puerto21 <- puerto21 %>% mutate(calle = "puerto21")
 reina_maria <- read_csv("data/reina_maria.csv", col_types = cols
                         (dateObserved = col_date(format = "%Y-%m-%d")))
-reina_maria <- reina_maria %>% mutate(calle = "reina_maira")
+reina_maria <- reina_maria %>% mutate(calle = "reina_maria")
 sueca2 <- read_csv("data/sueca2.csv", col_types = cols
                    (dateObserved = col_date(format = "%Y-%m-%d")))
 sueca2 <- sueca2 %>% mutate(calle = "sueca2")
@@ -287,6 +287,23 @@ sonido_tidy %>% gather(key = "horario", value = "nivel_sonido", c(S7_19,S19_23,S
 
 -¿De qué forma aumenta el ruido durante los días festivos (Navidades, Fallas, etc)?
 ```{r}
-
+navidad <- sonido_tidy %>% select(Fecha) %>% filter((month(Fecha) == 12 & day(Fecha) >= 24) | (month(Fecha) == 1 & day(Fecha) <= 7))
+fallas <- sonido_tidy %>% select(Fecha) %>% filter((year(Fecha) != 2021 & month(Fecha) == 3 & day(Fecha) >= 1 & day(Fecha) <= 22 ) | (year(Fecha) == 2021 & month(Fecha) == 9 & (day(Fecha) >= 1 | day(Fecha) <= 5)))
+sonido_tidy_festividad <- sonido_tidy %>% mutate(festividad = c(rep(NA,nrow(sonido_tidy))))
+for (i in 1:nrow(sonido_tidy)){
+  if (sonido_tidy$Fecha[i] %in% navidad$Fecha){
+    sonido_tidy_festividad$festividad[i] <- "navidad"
+  } else if(sonido_tidy$Fecha[i] %in% fallas$Fecha){
+    sonido_tidy_festividad$festividad[i] <- "fallas"
+  }
+  else{
+    sonido_tidy_festividad$festividad[i] <- "ordinario"
+  }
+}
+calles <- c("cadiz16", "cadiz3", "carles34", "cuba3", "doctor_serrano", "general_prim", "maestro_jose", "puerto21","reina_maria", "sueca_denia","sueca2", "sueca32", "sueca61", "vivons_cadiz")
+for (j in calles){
+  grafico <- sonido_tidy_festividad %>% filter(CALLE == j) %>% ggplot(aes(x = Fecha, y = NSC, color = festividad)) + geom_segment(aes(xend = lead(Fecha), yend = lead(NSC))) + ggtitle(j)
+  print(grafico)
+}
 ```
 
