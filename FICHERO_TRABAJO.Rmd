@@ -67,7 +67,7 @@ knit_hooks$set(inline = function(x) {
 
 # Especificamos las librerías necesarias en esta lista
 
-packages = c("tidyverse","knitr",'readr','lubridate','dplyr','tidyr', 'ggplot2', 'GGally', 'cat')
+packages = c("tidyverse","knitr",'readr','lubridate','dplyr','tidyr', 'ggplot2', 'GGally', 'car','e1071')
 
 #use this function to check if each package is on the local machine
 #if a package is installed, it will be loaded
@@ -262,6 +262,11 @@ qqPlot(sonido_tidy$S23_7)
 Como podemos ver, los datos acerca de las variables sobre las horas no siguen una distribución gaussiana debido a la alta frecuencia de los valores elevados. 
 
 Análisis bivariante
+
+Vamos a realizar un analisis bivariante de las variables de sonido que se nos han proporcionado. Para ello utilizaremos la funcion ggPairs para poder tener una representación de las relaciones exitentes entre las variables consideradas.
+
+Además de lo mencionado realizaremos un analisis de la correlacion con los métodos de spearman y pearson de las variables que hemos mencionado anteriormentre, para ver el grado que tienen de relacion de una forma lineal y no lineal.
+
 ```{r}
 sonido_tidy %>% select(NSC:S23_7) %>% ggpairs()
 
@@ -271,15 +276,25 @@ cor(s1, method = "pearson")
 
 ```
 
+Como ya se podia prever, las variables siguen una distibucion lineal, además de tener un alto grado de relacion, esto es normal ya que estamos tratando sonidos de las calles de un barrio y entre estas no hay mucha distancia por lo que tienen que tener una relacion en el sonido.
 
 # Creación de los estadisticos 
+
 
 ```{r}
 tabla <- sonido_tidy %>% select(NSC:S23_7)  %>%
   pivot_longer(names_to =  'tipo',values_to= 'sonido',NSC:S23_7) %>%
   group_by(tipo) %>% 
-  summarise_at(vars(sonido),
-               list(min=min, max=max, med=mean , mediana=median,sd=sd))
+  summarise(across(everything(),list(
+    mean=~mean(.,na.rm=TRUE),
+    length=~length(.),
+    q25=~quantile(.,0.25),
+    mediana=~quantile(.,0.5),
+    q75=~quantile(.,0.75),
+    sd=~sd(.,na.rm=TRUE),
+    skewness=~skewness(.,na.rm=TRUE),
+    kurtosis=~kurtosis(.,na.rm=TRUE)))) 
+names(tabla) = c("tipo" ,"mean","length","q25","mediana" , "q75","sd","skewness" ,"kurtosis") 
 tabla 
 
 ```
