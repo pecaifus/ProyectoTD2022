@@ -4,14 +4,14 @@ author: Pere Caimari Fuster, Enrique Sayas Bailach,Lucas Contreras Vilar, Diego 
   Soler, Pablo Gómez Martínez, Natalia Pons Valdelvira
 date: "`r Sys.Date()`"
 output:
-  html_document:
-    toc: yes
-    toc_depth: '3'
-    df_print: paged
-  html_notebook:
-    echo: yes
-    number_sections: yes
-    toc: yes
+  # html_document:
+  #   toc: yes
+  #   toc_depth: '3'
+  #   df_print: paged
+  # html_notebook:
+  #   echo: yes
+  #   number_sections: yes
+  #   toc: yes
   pdf_document:
     toc: yes
     toc_depth: 3
@@ -64,15 +64,12 @@ knit_hooks$set(inline = function(x) {
 
 # Instalación automática de paquetes
 
-Especificar las librerías necesarias para ejecutar el código en la variable ***packages***. Si no está instaladas, se instalarán y cargarán (solo para aquellas que están en el repositorio <http://cran.rediris.es>)
-
-El siguiente bloque, al no especificar opciones del *chunk* usa la configuración por defecto.
 
 ```{r echo = F}
 
 # Especificamos las librerías necesarias en esta lista
 
-packages = c("tidyverse","knitr",'readr','lubridate','dplyr','tidyr', 'ggplot2')
+packages = c("tidyverse","knitr",'readr','lubridate','dplyr','tidyr', 'ggplot2', 'GGally')
 
 #use this function to check if each package is on the local machine
 #if a package is installed, it will be loaded
@@ -235,11 +232,13 @@ sonido_tidy$S7_19[sonido_tidy$S7_19==Inf] <- maximo
 En este apartado vamos a estudiar la estructura interna de los datos.
 
 ```{r}
-ggplot(sonido_tidy, aes(x = CALLE, y = SDTN,col = CALLE)) + geom_boxplot()
-ggplot(sonido_tidy, aes(x = CALLE, y = S7_19,col = CALLE)) + geom_boxplot()
-ggplot(sonido_tidy, aes(x = CALLE, y = NSC,col = CALLE)) + geom_boxplot()
-ggplot(sonido_tidy, aes(x = CALLE, y = S19_23,col = CALLE)) + geom_boxplot()
-ggplot(sonido_tidy, aes(x = CALLE, y = S23_7,col = CALLE)) + geom_boxplot()
+t1 <- sonido_tidy %>%
+  pivot_longer(names_to = "sonido", values_to = "valor", NSC:S23_7)
+
+ggplot(t1, aes(x = CALLE, y = valor, col = CALLE)) + geom_boxplot() + 
+  theme(axis.text.x = element_blank(), axis.ticks = element_blank()) +
+  facet_wrap(~sonido)
+
 sonido_tidy %>% select(S7_19,S19_23,S23_7) %>%
   pivot_longer(names_to = 'horas', values_to = 'sonido',S7_19:S23_7) %>%
   group_by(horas) %>%  ggplot(aes(x = sonido)) +
@@ -247,18 +246,24 @@ sonido_tidy %>% select(S7_19,S19_23,S23_7) %>%
   scale_y_continuous( name = "Num. Oservaciones" ) +
   scale_x_continuous( name = "Sonido" ) +
   facet_wrap(~horas)
+
+sonido_tidy %>% select(NSC:S23_7) %>% ggpairs()
+
+s1 <- sonido_tidy %>% select(NSC:S23_7)
+cor(s1, method = "spearman")
+cor(s1, method = "pearson")
+
 ```
 
 # Creación de los estadisticos 
 
 ```{r}
-library(kableExtra)
 tabla <- sonido_tidy %>% select(NSC:S23_7)  %>%
   pivot_longer(names_to =  'tipo',values_to= 'sonido',NSC:S23_7) %>%
   group_by(tipo) %>% 
   summarise_at(vars(sonido),
                list(min=min, max=max, med=mean , mediana=median,sd=sd))
-tabla %>% kable() %>% kable_material()
+tabla 
 
 ```
 
@@ -267,29 +272,63 @@ tabla %>% kable() %>% kable_material()
 Una vez ya hemos hecho un primer análisis de los datos, sabemos cómo están organizados y distribuidos. Debemos plantearnos las preguntas que queramos resolver.
 -¿Cuál es la calle más/menos ruidosa?
 ```{r}
-sonido_tidy %>% group_by(CALLE) %>% summarise(Nivel_sonoro_continuo_medio_maximo = mean(NSC)) %>% filter(Nivel_sonoro_continuo_medio_maximo == max(Nivel_sonoro_continuo_medio_maximo))
+sonido_tidy %>% group_by(CALLE) %>%
+  summarise(Nivel_sonoro_continuo_medio_maximo = mean(NSC)) %>%
+  filter(Nivel_sonoro_continuo_medio_maximo ==
+           max(Nivel_sonoro_continuo_medio_maximo))
 
-sonido_tidy %>% group_by(CALLE) %>% summarise(Nivel_sonoro_continuo_medio_minimo = mean(NSC)) %>% filter(Nivel_sonoro_continuo_medio_minimo == min(Nivel_sonoro_continuo_medio_minimo))
+sonido_tidy %>% group_by(CALLE) %>%
+  summarise(Nivel_sonoro_continuo_medio_minimo = mean(NSC)) %>%
+  filter(Nivel_sonoro_continuo_medio_minimo ==
+           min(Nivel_sonoro_continuo_medio_minimo))
 ```
 -¿Cuál es la calle que ha alcanzado el máximo/mínimo nivel de ruido?
 ```{r}
-sonido_tidy %>% group_by(CALLE) %>% summarise(Nivel_sonoro_continuo_maximo = max(NSC)) %>% filter(Nivel_sonoro_continuo_maximo == max(Nivel_sonoro_continuo_maximo))
+sonido_tidy %>%
+  group_by(CALLE) %>%
+  summarise(Nivel_sonoro_continuo_maximo = max(NSC)) %>%
+  filter(Nivel_sonoro_continuo_maximo ==
+           max(Nivel_sonoro_continuo_maximo))
 
-sonido_tidy %>% group_by(CALLE) %>% summarise(Nivel_sonoro_continuo_minimo = min(NSC)) %>% filter(Nivel_sonoro_continuo_minimo == min(Nivel_sonoro_continuo_minimo))
+sonido_tidy %>%
+  group_by(CALLE) %>%
+  summarise(Nivel_sonoro_continuo_minimo = min(NSC)) %>%
+  filter(Nivel_sonoro_continuo_minimo == 
+           min(Nivel_sonoro_continuo_minimo))
 ```
 
 -¿Cuáles son las horas en las que hay más/menos ruido?
 ```{r}
-sonido_tidy %>% gather(key = "horario", value = "nivel_sonido", c(S7_19,S19_23,S23_7)) %>% group_by(horario) %>% summarise(Nivel_sonoro_continuo_medio_maximo = mean(nivel_sonido)) %>% filter(Nivel_sonoro_continuo_medio_maximo == max(Nivel_sonoro_continuo_medio_maximo))
+sonido_tidy %>%
+  gather(key = "horario", value = "nivel_sonido", c(S7_19,S19_23,S23_7)) %>%
+  group_by(horario) %>%
+  summarise(Nivel_sonoro_continuo_medio_maximo = mean(nivel_sonido)) %>%
+  filter(Nivel_sonoro_continuo_medio_maximo ==
+           max(Nivel_sonoro_continuo_medio_maximo))
 
-sonido_tidy %>% gather(key = "horario", value = "nivel_sonido", c(S7_19,S19_23,S23_7)) %>% group_by(horario) %>% summarise(Nivel_sonoro_continuo_medio_minimo = mean(nivel_sonido)) %>% filter(Nivel_sonoro_continuo_medio_minimo == min(Nivel_sonoro_continuo_medio_minimo))
+sonido_tidy %>%
+  gather(key = "horario", value = "nivel_sonido", c(S7_19,S19_23,S23_7)) %>%
+  group_by(horario) %>%
+  summarise(Nivel_sonoro_continuo_medio_minimo = mean(nivel_sonido)) %>%
+  filter(Nivel_sonoro_continuo_medio_minimo ==
+           min(Nivel_sonoro_continuo_medio_minimo))
 ```
 
 -¿De qué forma aumenta el ruido durante los días festivos (Navidades, Fallas, etc)?
 ```{r}
-navidad <- sonido_tidy %>% select(Fecha) %>% filter((month(Fecha) == 12 & day(Fecha) >= 24) | (month(Fecha) == 1 & day(Fecha) <= 7))
-fallas <- sonido_tidy %>% select(Fecha) %>% filter((year(Fecha) != 2021 & month(Fecha) == 3 & day(Fecha) >= 1 & day(Fecha) <= 22 ) | (year(Fecha) == 2021 & month(Fecha) == 9 & (day(Fecha) >= 1 | day(Fecha) <= 5)))
-sonido_tidy_festividad <- sonido_tidy %>% mutate(festividad = c(rep(NA,nrow(sonido_tidy))))
+navidad <- sonido_tidy %>%
+  select(Fecha) %>%
+  filter((month(Fecha) == 12 & day(Fecha) >= 24) |
+           (month(Fecha) == 1 & day(Fecha) <= 7))
+fallas <- sonido_tidy %>%
+  select(Fecha) %>%
+  filter((year(Fecha) != 2021 & month(Fecha) == 3 &
+            day(Fecha) >= 1 & day(Fecha) <= 22 ) |
+           (year(Fecha) == 2021 & month(Fecha) == 9 &
+              (day(Fecha) >= 1 | day(Fecha) <= 5)))
+sonido_tidy_festividad <- sonido_tidy %>%
+  mutate(festividad = c(rep(NA,nrow(sonido_tidy))))
+
 for (i in 1:nrow(sonido_tidy)){
   if (sonido_tidy$Fecha[i] %in% navidad$Fecha){
     sonido_tidy_festividad$festividad[i] <- "navidad"
@@ -300,10 +339,19 @@ for (i in 1:nrow(sonido_tidy)){
     sonido_tidy_festividad$festividad[i] <- "ordinario"
   }
 }
-calles <- c("cadiz16", "cadiz3", "carles34", "cuba3", "doctor_serrano", "general_prim", "maestro_jose", "puerto21","reina_maria", "sueca_denia","sueca2", "sueca32", "sueca61", "vivons_cadiz")
-for (j in calles){
-  grafico <- sonido_tidy_festividad %>% filter(CALLE == j) %>% ggplot(aes(x = Fecha, y = NSC, color = festividad)) + geom_segment(aes(xend = lead(Fecha), yend = lead(NSC))) + ggtitle(j)
-  print(grafico)
-}
+calles <- c("cadiz16", "cadiz3", "carles34", "cuba3",
+            "doctor_serrano", "general_prim", "maestro_jose",
+            "puerto21","reina_maria", "sueca_denia","sueca2",
+            "sueca32", "sueca61", "vivons_cadiz")
+
+ggplot(sonido_tidy_festividad, aes(x = Fecha, y = NSC, col = festividad)) +
+  geom_line(aes(xend = lead(Fecha), yend = lead(NSC))) +
+  facet_wrap(~CALLE) + theme(axis.text.x = element_blank(),
+                             axis.ticks = element_blank())
+
+# for (j in calles){
+#   grafico <- sonido_tidy_festividad %>% filter(CALLE == j) %>% ggplot(aes(x = Fecha, y = NSC, color = festividad)) + geom_segment(aes(xend = lead(Fecha), yend = lead(NSC))) + ggtitle(j)
+#   print(grafico)
+# }
 ```
 
