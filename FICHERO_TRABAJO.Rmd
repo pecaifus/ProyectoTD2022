@@ -37,15 +37,13 @@ language:
 ---
 
 
-Las opciones siguientes nos permite traducir estas etiquetas para que aparezcan en otro idioma en caso de que se usen en el documento para referenciar a figuras, tablas, etc.
-
-
 ```{r setup, cache = F, echo = F, message = F, warning = F, tidy = F}
 
 
 # CONFIGURACIÓN GENERAL
 library(knitr)
 options(width = 100)
+rm(list=ls())
 
 # Opciones generales de los chucks. Se utilizarán salvo cambios en el chunk
 opts_chunk$set(echo=T, message = F, error = F, warning = F, comment = NA, fig.align = 'center', dpi = 200, tidy = F, cache.path = '.cache/', fig.path = './figura/')
@@ -69,7 +67,7 @@ knit_hooks$set(inline = function(x) {
 
 # Especificamos las librerías necesarias en esta lista
 
-packages = c("tidyverse","knitr",'readr','lubridate','dplyr','tidyr', 'ggplot2', 'GGally')
+packages = c("tidyverse","knitr",'readr','lubridate','dplyr','tidyr', 'ggplot2', 'GGally', 'cat')
 
 #use this function to check if each package is on the local machine
 #if a package is installed, it will be loaded
@@ -231,6 +229,8 @@ sonido_tidy$S7_19[sonido_tidy$S7_19==Inf] <- maximo
 
 En este apartado vamos a estudiar la estructura interna de los datos.
 
+
+Vamos a empezar analizando cada una de las variables sonoras en cada calle para ver sobre qué valores se mueve cada una.
 ```{r}
 t1 <- sonido_tidy %>%
   pivot_longer(names_to = "sonido", values_to = "valor", NSC:S23_7)
@@ -239,6 +239,11 @@ ggplot(t1, aes(x = CALLE, y = valor, col = CALLE)) + geom_boxplot() +
   theme(axis.text.x = element_blank(), axis.ticks = element_blank()) +
   facet_wrap(~sonido)
 
+```
+Podemos afirmar que los datos están bastante distribuidos. La regla del boxplot determinaría muchos outliers pero estos no deben considerarse como outliers ya que son valores posibles definidos en un intervalo razonable.
+
+Ahora analizaremos si las variables siguen una distribución gaussiana. Para ello vamos a utilizar diferentes tipos de gráficos
+```{r}
 sonido_tidy %>% select(S7_19,S19_23,S23_7) %>%
   pivot_longer(names_to = 'horas', values_to = 'sonido',S7_19:S23_7) %>%
   group_by(horas) %>%  ggplot(aes(x = sonido)) +
@@ -247,6 +252,15 @@ sonido_tidy %>% select(S7_19,S19_23,S23_7) %>%
   scale_x_continuous( name = "Sonido" ) +
   facet_wrap(~horas)
 
+qqPlot(sonido_tidy$S7_19)
+qqPlot(sonido_tidy$S19_23)
+qqPlot(sonido_tidy$S23_7)
+
+```
+Como podemos ver, los datos acerca de las variables sobre las horas no siguen una distribución gaussiana debido a la alta frecuencia de los valores elevados. 
+
+Análisis bivariante
+```{r}
 sonido_tidy %>% select(NSC:S23_7) %>% ggpairs()
 
 s1 <- sonido_tidy %>% select(NSC:S23_7)
@@ -254,6 +268,7 @@ cor(s1, method = "spearman")
 cor(s1, method = "pearson")
 
 ```
+
 
 # Creación de los estadisticos 
 
