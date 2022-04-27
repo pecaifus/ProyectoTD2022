@@ -246,6 +246,8 @@ sonido_tidy %>% select(S7_19,S19_23,S23_7) %>%
   scale_y_continuous( name = "Num. Oservaciones" ) +
   scale_x_continuous( name = "Sonido" ) +
   facet_wrap(~horas)
+  
+#qqPlot(sonido_tidy$S7_19)
 
 sonido_tidy %>% select(NSC:S23_7) %>% ggpairs()
 
