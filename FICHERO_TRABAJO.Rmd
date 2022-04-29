@@ -4,14 +4,14 @@ author: Pere Caimari Fuster, Enrique Sayas Bailach,Lucas Contreras Vilar, Diego 
   Soler, Pablo Gómez Martínez, Natalia Pons Valdelvira
 date: "`r Sys.Date()`"
 output:
-  # html_document:
-  #   toc: yes
-  #   toc_depth: '3'
-  #   df_print: paged
-  # html_notebook:
-  #   echo: yes
-  #   number_sections: yes
-  #   toc: yes
+  html_document:
+    toc: yes
+    toc_depth: '3'
+    df_print: paged
+  html_notebook:
+    echo: yes
+    number_sections: yes
+    toc: yes
   pdf_document:
     toc: yes
     toc_depth: 3
