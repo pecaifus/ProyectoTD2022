@@ -387,7 +387,7 @@ ggplot(sonido_tidy_festividad, aes(x = Fecha, y = NSC, col = festividad)) +
 # }
 ```
 
-- Si quisiesemos comprar una casa en las calles a analizar y nos gustaria que no tuviese mucho ruido, cual o cuales serian las mejores.
+- Si quisiesemos comprar una casa en las calles a analizar y nos gustaria que no tuviese mucho ruido, cual o cuales serian las mejores.¿Y si en vez de ser una casa fuese una empresa?
 
 ```{r}
 ggplot(sonido_tidy, aes(x = Fecha, y = NSC,col='blue')) +
@@ -397,5 +397,7 @@ ggplot(sonido_tidy, aes(x = Fecha, y = NSC,col='blue')) +
 ```
 
 Como se puede observar las mejores calles a mirar un piso serian Sueca 2 ya que usualmente no es muy ruidosa, además otras calles interesantes a ver serian maesto jose, general prim, puerto 21 o incluso cuba 3 son tambien calles con poco ruido, exceptuando algunos picos que pueden estar relacionados con dias festivos como las fallas.
+
+Por el contrario si quisiesemos montar una empresa nos interesaria montarla en las que mas ruido tengan ya que esto significara que estaran más transitadas por personas y ayudara a que se vea mas la marca, entonces nos interesaria montar nuestro negocio en calles como caiz 3, cadiz 16 o carles 32.
 
 
