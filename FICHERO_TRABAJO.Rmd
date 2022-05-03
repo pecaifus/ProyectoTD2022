@@ -400,4 +400,7 @@ Como se puede observar las mejores calles a mirar un piso serian Sueca 2 ya que 
 
 Por el contrario si quisiesemos montar una empresa nos interesaria montarla en las que mas ruido tengan ya que esto significara que estaran más transitadas por personas y ayudara a que se vea mas la marca, entonces nos interesaria montar nuestro negocio en calles como caiz 3, cadiz 16 o carles 32.
 
+-Las calles que estan cercanas unas de otras tienen una distribucion similar ?
 
+Primero veamos como estan ubicadas en el mapa.
+![](mapa.png)
