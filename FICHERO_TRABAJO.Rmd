@@ -404,3 +404,45 @@ Por el contrario si quisiesemos montar una empresa nos interesaria montarla en l
 
 Primero veamos como estan ubicadas en el mapa.
 ![](mapa.png)
+
+
+-¿Que mes es el más ruidoso?
+```{r}
+meses<- sonido_tidy %>% filter(month(Fecha)== 1) %>% mutate(mes = 'Enero')
+meses<- sonido_tidy %>% filter(month(Fecha)== 2) %>% mutate(mes = 'Febrero') %>% union(meses)
+meses<- sonido_tidy %>% filter(month(Fecha)== 3) %>% mutate(mes = 'Marzo') %>% union(meses)
+meses<- sonido_tidy %>% filter(month(Fecha)== 4) %>% mutate(mes = 'Abril') %>% union(meses)
+meses<- sonido_tidy %>% filter(month(Fecha)== 5) %>% mutate(mes = 'Mayo')%>% union(meses)
+meses<- sonido_tidy %>% filter(month(Fecha)== 6) %>% mutate(mes = 'Junio')%>% union(meses)
+meses<- sonido_tidy %>% filter(month(Fecha)== 7) %>% mutate(mes = 'Julio')%>% union(meses)
+meses<- sonido_tidy %>% filter(month(Fecha)== 8) %>% mutate(mes = 'Agosto')%>% union(meses)
+meses<- sonido_tidy %>% filter(month(Fecha)== 9) %>% mutate(mes = 'Septiembre')%>% union(meses)
+meses<- sonido_tidy %>% filter(month(Fecha)== 10) %>% mutate(mes = 'Octubre')%>% union(meses)
+meses<- sonido_tidy %>% filter(month(Fecha)== 11) %>% mutate(mes = 'Noviembre')%>% union(meses)
+meses<- sonido_tidy %>% filter(month(Fecha)== 12) %>% mutate(mes = 'Diciembre')%>% union(meses)
+
+```
+
+```{r}
+tabla <- meses %>% group_by(mes) %>%  select(NSC)  %>%
+  
+  summarise(across(everything(),list(
+    mean=~mean(.,na.rm=TRUE),
+    length=~length(.),
+    q25=~quantile(.,0.25),
+    mediana=~quantile(.,0.5),
+    q75=~quantile(.,0.75),
+    sd=~sd(.,na.rm=TRUE),
+    skewness=~skewness(.,na.rm=TRUE),
+    kurtosis=~kurtosis(.,na.rm=TRUE)))) 
+names(tabla) = c("tipo" ,"mean","length","q25","mediana" , "q75","sd","skewness" ,"kurtosis") 
+tabla 
+```
+
+```{r}
+
+library(ggridges)
+meses %>% ggplot( aes(x = NSC, y = mes,fill=mes)) +
+  geom_density_ridges2()
+```
+
