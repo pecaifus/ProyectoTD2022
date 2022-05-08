@@ -405,6 +405,41 @@ Por el contrario si quisiesemos montar una empresa nos interesaria montarla en l
 Primero veamos como estan ubicadas en el mapa.
 ![](mapa_mejorado.gif)
 
+```{r}
+csueca32_puri21<- sonido_tidy %>% filter(CALLE == 'sueca32'| CALLE == 'puerto21' )
+csueca2_vivons<- sonido_tidy %>% filter(CALLE == 'sueca2'| CALLE == 'sueca_denia' )
+creina_carlos <- sonido_tidy %>% filter(CALLE == 'carles34'| CALLE == 'reina_maria')
+cdoctor_cadiz3 <- sonido_tidy %>% filter(CALLE == 'cadiz3'| CALLE == 'doctor_serrano')
+```
+
+
+```{r}
+ggplot(csueca32_puri21, aes(x = Fecha, y = NSC,col='blue')) +
+  geom_line(aes(xend = lead(Fecha), yend = lead(NSC))) +
+  facet_wrap(~CALLE) + theme(axis.text.x = element_blank(),
+                             axis.ticks = element_blank())
+```
+```{r}
+ggplot(csueca2_vivons, aes(x = Fecha, y = NSC,col='blue')) +
+  geom_line(aes(xend = lead(Fecha), yend = lead(NSC))) +
+  facet_wrap(~CALLE) + theme(axis.text.x = element_blank(),
+                             axis.ticks = element_blank())
+```
+
+```{r}
+ggplot(creina_carlos, aes(x = Fecha, y = NSC,col='blue')) +
+  geom_line(aes(xend = lead(Fecha), yend = lead(NSC))) +
+  facet_wrap(~CALLE) + theme(axis.text.x = element_blank(),
+                             axis.ticks = element_blank())
+```
+
+```{r}
+ggplot(cdoctor_cadiz3, aes(x = Fecha, y = NSC,col='blue')) +
+  geom_line(aes(xend = lead(Fecha), yend = lead(NSC))) +
+  facet_wrap(~CALLE) + theme(axis.text.x = element_blank(),
+                             axis.ticks = element_blank())
+```
+
 
 -¿Que mes es el más ruidoso?
 ```{r}
