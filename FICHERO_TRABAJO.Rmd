@@ -490,8 +490,19 @@ sonido_anyo<- sonido_tidy %>% filter(year(Fecha)== 2021) %>% mutate(anyo = '2021
 sonido_anyo<- sonido_tidy %>% filter(year(Fecha)== 2022) %>% mutate(anyo = '2022') %>% union(sonido_anyo)
 ```
 
+
 ```{r}
 sonido_anyo %>% ggplot( aes(x = NSC, y = anyo,fill=anyo)) +
   geom_density_ridges()
+```
+
+- Vamos a analizar el nivel sonoro continuo curante el mes de marzo de 2022 para ver cuánto y como aumenta durante el periodo de fallas.
+
+```{r}
+meses %>% filter(mes == "Marzo" & year(Fecha) == 2022) %>% 
+  mutate(dia = day(Fecha)) %>% 
+  ggplot(aes(x = dia, y = NSC, col = CALLE)) +
+  geom_smooth(method = "loess", formula = y ~ x) +
+  geom_point() + facet_wrap(~CALLE)
 ```
 
