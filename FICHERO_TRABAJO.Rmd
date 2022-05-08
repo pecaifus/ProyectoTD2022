@@ -67,7 +67,7 @@ knit_hooks$set(inline = function(x) {
 
 # Especificamos las librerías necesarias en esta lista
 
-packages = c("tidyverse","knitr",'readr','lubridate','dplyr','tidyr', 'ggplot2', 'GGally', 'car','e1071')
+packages = c("tidyverse","knitr",'readr','lubridate','dplyr','tidyr', 'ggplot2', 'GGally', 'car','e1071', 'ggridges')
 
 #use this function to check if each package is on the local machine
 #if a package is installed, it will be loaded
@@ -229,6 +229,7 @@ sonido_tidy$S7_19[sonido_tidy$S7_19==Inf] <- maximo
 
 En este apartado vamos a estudiar la estructura interna de los datos.
 
+## Análisis univariante
 
 Vamos a empezar analizando cada una de las variables sonoras en cada calle para ver sobre qué valores se mueve cada una.
 ```{r}
@@ -251,8 +252,6 @@ sonido_tidy %>% select(S7_19,S19_23,S23_7) %>%
   scale_y_continuous( name = "Num. Oservaciones" ) +
   scale_x_continuous( name = "Sonido" ) +
   facet_wrap(~horas)
-  
-#qqPlot(sonido_tidy$S7_19)
 
 qqPlot(sonido_tidy$S7_19)
 qqPlot(sonido_tidy$S19_23)
@@ -261,7 +260,7 @@ qqPlot(sonido_tidy$S23_7)
 ```
 Como podemos ver, los datos acerca de las variables sobre las horas no siguen una distribución gaussiana debido a la alta frecuencia de los valores elevados. 
 
-Análisis bivariante
+## Análisis bivariante
 
 Vamos a realizar un analisis bivariante de las variables de sonido que se nos han proporcionado. Para ello utilizaremos la funcion ggPairs para poder tener una representación de las relaciones exitentes entre las variables consideradas.
 
@@ -280,6 +279,7 @@ Como ya se podia prever, las variables siguen una distibucion lineal, además de
 
 # Creación de los estadisticos 
 
+El primer acercamiento que haremos al análsisi más en profundidad es una tabla de estadísticos (cuartil 25, cuartil 75, media, mediana, longitud, desviación estándardm sesgo y kurtosis). Estos nos proporcionarán una primera idea de cómo está distribuida más internamente cada variable.
 
 ```{r}
 tabla <- sonido_tidy %>% select(NSC:S23_7)  %>%
@@ -299,37 +299,16 @@ tabla
 
 ```
 
+La mayoría de ellas siguen valores bastante parecidos, como es lógico, la variable S23_7 (la de la noche) es la que presenta valores más pequeños pero su distribución estándard es la más grande debido al contraste entre las últimas/primeras horas y las horas más "centrales" de la noche. También nos llama la atención que la variable SDTN (sonido día-tarde-noche) es la que mpota valores más altos tanto en la media, la mediana como en los cuartiles. Podemos apreciar que el NSC es la que tiene la kurtosis más elevada lo cual nos dice que que la mayoría de los valores están centrados en la media, lo cual tiene mucho sentido ya que es el nivel sonoro continuo.
+
 # Preguntas a resolver
 
 Una vez ya hemos hecho un primer análisis de los datos, sabemos cómo están organizados y distribuidos. Debemos plantearnos las preguntas que queramos resolver.
--¿Cuál es la calle más/menos ruidosa?
-```{r}
-sonido_tidy %>% group_by(CALLE) %>%
-  summarise(Nivel_sonoro_continuo_medio_maximo = mean(NSC)) %>%
-  filter(Nivel_sonoro_continuo_medio_maximo ==
-           max(Nivel_sonoro_continuo_medio_maximo))
 
-sonido_tidy %>% group_by(CALLE) %>%
-  summarise(Nivel_sonoro_continuo_medio_minimo = mean(NSC)) %>%
-  filter(Nivel_sonoro_continuo_medio_minimo ==
-           min(Nivel_sonoro_continuo_medio_minimo))
-```
--¿Cuál es la calle que ha alcanzado el máximo/mínimo nivel de ruido?
-```{r}
-sonido_tidy %>%
-  group_by(CALLE) %>%
-  summarise(Nivel_sonoro_continuo_maximo = max(NSC)) %>%
-  filter(Nivel_sonoro_continuo_maximo ==
-           max(Nivel_sonoro_continuo_maximo))
+## Horas
 
-sonido_tidy %>%
-  group_by(CALLE) %>%
-  summarise(Nivel_sonoro_continuo_minimo = min(NSC)) %>%
-  filter(Nivel_sonoro_continuo_minimo == 
-           min(Nivel_sonoro_continuo_minimo))
-```
+-¿Cuál es la franja horarioa en la que de media hay más ruido?
 
--¿Cuáles son las horas en las que hay más/menos ruido?
 ```{r}
 sonido_tidy %>%
   gather(key = "horario", value = "nivel_sonido", c(S7_19,S19_23,S23_7)) %>%
@@ -346,61 +325,145 @@ sonido_tidy %>%
            min(Nivel_sonoro_continuo_medio_minimo))
 ```
 
--¿De qué forma aumenta el ruido durante los días festivos (Navidades, Fallas, etc)?
-```{r}
-navidad <- sonido_tidy %>%
-  select(Fecha) %>%
-  filter((month(Fecha) == 12 & day(Fecha) >= 24) |
-           (month(Fecha) == 1 & day(Fecha) <= 7))
-fallas <- sonido_tidy %>%
-  select(Fecha) %>%
-  filter((year(Fecha) != 2021 & month(Fecha) == 3 &
-            day(Fecha) >= 1 & day(Fecha) <= 22 ) |
-           (year(Fecha) == 2021 & month(Fecha) == 9 &
-              (day(Fecha) >= 1 | day(Fecha) <= 5)))
-sonido_tidy_festividad <- sonido_tidy %>%
-  mutate(festividad = c(rep(NA,nrow(sonido_tidy))))
+Como era de esperar, la que más ruido proporciona es la de entre las 7 y las 19 y la que menos es la de entre las 23 y las 7.
 
-for (i in 1:nrow(sonido_tidy)){
-  if (sonido_tidy$Fecha[i] %in% navidad$Fecha){
-    sonido_tidy_festividad$festividad[i] <- "navidad"
-  } else if(sonido_tidy$Fecha[i] %in% fallas$Fecha){
-    sonido_tidy_festividad$festividad[i] <- "fallas"
-  }
-  else{
-    sonido_tidy_festividad$festividad[i] <- "ordinario"
-  }
-}
-calles <- c("cadiz16", "cadiz3", "carles34", "cuba3",
-            "doctor_serrano", "general_prim", "maestro_jose",
-            "puerto21","reina_maria", "sueca_denia","sueca2",
-            "sueca32", "sueca61", "vivons_cadiz")
+## Meses
 
-ggplot(sonido_tidy_festividad, aes(x = Fecha, y = NSC, col = festividad)) +
-  geom_line(aes(xend = lead(Fecha), yend = lead(NSC))) +
-  facet_wrap(~CALLE) + theme(axis.text.x = element_blank(),
-                             axis.ticks = element_blank())
-
-# for (j in calles){
-#   grafico <- sonido_tidy_festividad %>% filter(CALLE == j) %>% ggplot(aes(x = Fecha, y = NSC, color = festividad)) + geom_segment(aes(xend = lead(Fecha), yend = lead(NSC))) + ggtitle(j)
-#   print(grafico)
-# }
-```
-
-- Si quisiesemos comprar una casa en las calles a analizar y nos gustaria que no tuviese mucho ruido, cual o cuales serian las mejores.¿Y si en vez de ser una casa fuese una empresa?
+Vamos a realizar un estudio de las variables por meses, empezaremos asignando a cada observación su mes corresponente
 
 ```{r}
-ggplot(sonido_tidy, aes(x = Fecha, y = NSC,col='blue')) +
-  geom_line(aes(xend = lead(Fecha), yend = lead(NSC))) +
-  facet_wrap(~CALLE) + theme(axis.text.x = element_blank(),
-                             axis.ticks = element_blank())
+meses<- sonido_tidy %>% filter(month(Fecha)== 1) %>% mutate(mes = 'Enero')
+meses<- sonido_tidy %>% filter(month(Fecha)== 2) %>% mutate(mes = 'Febrero') %>% union(meses)
+meses<- sonido_tidy %>% filter(month(Fecha)== 3) %>% mutate(mes = 'Marzo') %>% union(meses)
+meses<- sonido_tidy %>% filter(month(Fecha)== 4) %>% mutate(mes = 'Abril') %>% union(meses)
+meses<- sonido_tidy %>% filter(month(Fecha)== 5) %>% mutate(mes = 'Mayo')%>% union(meses)
+meses<- sonido_tidy %>% filter(month(Fecha)== 6) %>% mutate(mes = 'Junio')%>% union(meses)
+meses<- sonido_tidy %>% filter(month(Fecha)== 7) %>% mutate(mes = 'Julio')%>% union(meses)
+meses<- sonido_tidy %>% filter(month(Fecha)== 8) %>% mutate(mes = 'Agosto')%>% union(meses)
+meses<- sonido_tidy %>% filter(month(Fecha)== 9) %>% mutate(mes = 'Septiembre')%>% union(meses)
+meses<- sonido_tidy %>% filter(month(Fecha)== 10) %>% mutate(mes = 'Octubre')%>% union(meses)
+meses<- sonido_tidy %>% filter(month(Fecha)== 11) %>% mutate(mes = 'Noviembre')%>% union(meses)
+meses<- sonido_tidy %>% filter(month(Fecha)== 12) %>% mutate(mes = 'Diciembre')%>% union(meses)
+
 ```
 
-Como se puede observar las mejores calles a mirar un piso serian Sueca 2 ya que usualmente no es muy ruidosa, además otras calles interesantes a ver serian maesto jose, general prim, puerto 21 o incluso cuba 3 son tambien calles con poco ruido, exceptuando algunos picos que pueden estar relacionados con dias festivos como las fallas.
+Tras un perimer análisis, podemos ver que no existen valores para el mes de Julio.
 
-Por el contrario si quisiesemos montar una empresa nos interesaria montarla en las que mas ruido tengan ya que esto significara que estaran más transitadas por personas y ayudara a que se vea mas la marca, entonces nos interesaria montar nuestro negocio en calles como caiz 3, cadiz 16 o carles 32.
+Empezaremos creando una tabla de estadísticos para cada mes, como hicimos con las horas.
 
--Las calles que estan cercanas unas de otras tienen una distribucion similar ?
+```{r}
+tabla <- meses %>% group_by(mes) %>%  select(NSC)  %>%
+  summarise(across(everything(),list(
+    mean=~mean(.,na.rm=TRUE),
+    length=~length(.),
+    q25=~quantile(.,0.25),
+    mediana=~quantile(.,0.5),
+    q75=~quantile(.,0.75),
+    sd=~sd(.,na.rm=TRUE),
+    skewness=~skewness(.,na.rm=TRUE),
+    kurtosis=~kurtosis(.,na.rm=TRUE)))) 
+names(tabla) = c("mes" ,"mean","length","q25","mediana" , "q75","sd","skewness" ,"kurtosis") 
+tabla 
+```
+
+Inspeccionando la tabla observamos que el más con una media más alta es marzo, aspecto que analizaremos más adelanto, además de ser el mes con una mayor desviación estándard. También es de destacar, que a diferencia de las franjas horarias aquí no tenemos el mismo número de observaciones para cada mes, exceptuando Julio, Agosto es el mes del que tenemos menos observaciones.
+
+-¿Que mes es el más/menos ruidoso?
+
+Esta pregunta la resolveremos con un gráfico de densidad en el que vamos a representar cada mes con un diagrama y en el eje x el nivel sonoro continuo ya que nos proporciona una media de las franjas horarias.
+
+```{r}
+meses %>% ggplot( aes(x = NSC, y = mes, fill = mes)) +
+  geom_density_ridges2()
+```
+De la tabla de estadísticos es muy destacable la kurtosis del año 2021, lo cuál nos indica que sus datos están bastante centrados. Eso puede ser debido a la falta de observaciones para los otros dos años
+Podemos observar que mayo es el mes cuya curva está más plana, lo cuál significa que los datos están más distribuidos y alcanza picos más altos.
+
+```{r}
+meses %>% group_by(mes) %>%
+  summarise(bajo = mean(NSC)) %>% 
+  filter(bajo == min(bajo))
+
+meses %>% group_by(mes) %>%
+  summarise(alto = mean(NSC)) %>% 
+  filter(alto == max(alto))
+```
+Enero es el mes con menor ruido medio y marzo el mes con mayor ruido medio
+
+## Años
+
+Ahora realizaremos el análsis por años, empezaremos asignando el año a cada una de las observaciones
+
+```{r}
+sonido_anyo<- sonido_tidy %>% filter(year(Fecha)== 2020) %>% mutate(anyo = '2020')
+sonido_anyo<- sonido_tidy %>% filter(year(Fecha)== 2021) %>% mutate(anyo = '2021') %>% union(sonido_anyo)
+sonido_anyo<- sonido_tidy %>% filter(year(Fecha)== 2022) %>% mutate(anyo = '2022') %>% union(sonido_anyo)
+```
+
+Realizaremos una tabla de estadísticos y un gráfico con el mismo objetivo  del apartado anterior para ver cómo están distriuidos los datos
+
+```{r}
+tabla <- sonido_anyo %>% group_by(anyo) %>%  select(NSC)  %>%
+  summarise(across(everything(),list(
+    mean=~mean(.,na.rm=TRUE),
+    length=~length(.),
+    q25=~quantile(.,0.25),
+    mediana=~quantile(.,0.5),
+    q75=~quantile(.,0.75),
+    sd=~sd(.,na.rm=TRUE),
+    skewness=~skewness(.,na.rm=TRUE),
+    kurtosis=~kurtosis(.,na.rm=TRUE)))) 
+names(tabla) = c("anyo" ,"mean","length","q25","mediana" , "q75","sd","skewness" ,"kurtosis") 
+tabla 
+
+sonido_anyo %>% ggplot( aes(x = NSC, y = anyo,fill=anyo)) +
+  geom_density_ridges()
+```
+- ¿Cuál fue el año registrado más/menos ruidoso?
+
+```{r}
+sonido_anyo %>% group_by(anyo) %>%
+  summarise(bajo = mean(NSC)) %>% 
+  filter(bajo == min(bajo))
+
+sonido_anyo %>% group_by(anyo) %>%
+  summarise(alto = mean(NSC)) %>% 
+  filter(alto == max(alto))
+```
+
+
+## Calles
+
+¿Cuál es la calle más/menos ruidosa?
+```{r}
+sonido_tidy %>% group_by(CALLE) %>%
+  summarise(Nivel_sonoro_continuo_medio_maximo = mean(NSC)) %>%
+  filter(Nivel_sonoro_continuo_medio_maximo ==
+           max(Nivel_sonoro_continuo_medio_maximo))
+
+sonido_tidy %>% group_by(CALLE) %>%
+  summarise(Nivel_sonoro_continuo_medio_minimo = mean(NSC)) %>%
+  filter(Nivel_sonoro_continuo_medio_minimo ==
+           min(Nivel_sonoro_continuo_medio_minimo))
+```
+
+¿Cuál es la calle que ha alcanzado el máximo/mínimo nivel de ruido?
+
+```{r}
+sonido_tidy %>%
+  group_by(CALLE) %>%
+  summarise(Nivel_sonoro_continuo_maximo = max(NSC)) %>%
+  filter(Nivel_sonoro_continuo_maximo ==
+           max(Nivel_sonoro_continuo_maximo))
+
+sonido_tidy %>%
+  group_by(CALLE) %>%
+  summarise(Nivel_sonoro_continuo_minimo = min(NSC)) %>%
+  filter(Nivel_sonoro_continuo_minimo == 
+           min(Nivel_sonoro_continuo_minimo))
+```
+
+Las calles que estan cercanas unas de otras tienen una distribucion similar ?
 
 Primero veamos como estan ubicadas en el mapa.
 ![](mapa_mejorado.gif)
@@ -440,63 +503,46 @@ ggplot(cdoctor_cadiz3, aes(x = Fecha, y = NSC,col='blue')) +
                              axis.ticks = element_blank())
 ```
 
+## Festvivdad
 
--¿Que mes es el más ruidoso?
+Para analizar cómo se comportan los diferentes niveles de ruido durante las festividades asignaremos a cada observación a la festividad que pertenece (navidad o fallas) y si no pertenece a ninguna de ellas, lo llamaremos "ordinario".
 ```{r}
-meses<- sonido_tidy %>% filter(month(Fecha)== 1) %>% mutate(mes = 'Enero')
-meses<- sonido_tidy %>% filter(month(Fecha)== 2) %>% mutate(mes = 'Febrero') %>% union(meses)
-meses<- sonido_tidy %>% filter(month(Fecha)== 3) %>% mutate(mes = 'Marzo') %>% union(meses)
-meses<- sonido_tidy %>% filter(month(Fecha)== 4) %>% mutate(mes = 'Abril') %>% union(meses)
-meses<- sonido_tidy %>% filter(month(Fecha)== 5) %>% mutate(mes = 'Mayo')%>% union(meses)
-meses<- sonido_tidy %>% filter(month(Fecha)== 6) %>% mutate(mes = 'Junio')%>% union(meses)
-meses<- sonido_tidy %>% filter(month(Fecha)== 7) %>% mutate(mes = 'Julio')%>% union(meses)
-meses<- sonido_tidy %>% filter(month(Fecha)== 8) %>% mutate(mes = 'Agosto')%>% union(meses)
-meses<- sonido_tidy %>% filter(month(Fecha)== 9) %>% mutate(mes = 'Septiembre')%>% union(meses)
-meses<- sonido_tidy %>% filter(month(Fecha)== 10) %>% mutate(mes = 'Octubre')%>% union(meses)
-meses<- sonido_tidy %>% filter(month(Fecha)== 11) %>% mutate(mes = 'Noviembre')%>% union(meses)
-meses<- sonido_tidy %>% filter(month(Fecha)== 12) %>% mutate(mes = 'Diciembre')%>% union(meses)
+navidad <- sonido_tidy %>%
+  select(Fecha) %>%
+  filter((month(Fecha) == 12 & day(Fecha) >= 24) |
+           (month(Fecha) == 1 & day(Fecha) <= 7))
+fallas <- sonido_tidy %>%
+  select(Fecha) %>%
+  filter((year(Fecha) != 2021 & month(Fecha) == 3 &
+            day(Fecha) >= 1 & day(Fecha) <= 22 ) |
+           (year(Fecha) == 2021 & month(Fecha) == 9 &
+              (day(Fecha) >= 1 | day(Fecha) <= 5)))
+sonido_tidy_festividad <- sonido_tidy %>%
+  mutate(festividad = c(rep(NA,nrow(sonido_tidy))))
+
+for (i in 1:nrow(sonido_tidy)){
+  if (sonido_tidy$Fecha[i] %in% navidad$Fecha){
+    sonido_tidy_festividad$festividad[i] <- "navidad"
+  } else if(sonido_tidy$Fecha[i] %in% fallas$Fecha){
+    sonido_tidy_festividad$festividad[i] <- "fallas"
+  }
+  else{
+    sonido_tidy_festividad$festividad[i] <- "ordinario"
+  }
+}
+calles <- c("cadiz16", "cadiz3", "carles34", "cuba3",
+            "doctor_serrano", "general_prim", "maestro_jose",
+            "puerto21","reina_maria", "sueca_denia","sueca2",
+            "sueca32", "sueca61", "vivons_cadiz")
+
+ggplot(sonido_tidy_festividad, aes(x = Fecha, y = NSC, col = festividad)) +
+  geom_line(aes(xend = lead(Fecha), yend = lead(NSC))) +
+  facet_wrap(~CALLE) + theme(axis.text.x = element_blank(),
+                             axis.ticks = element_blank())
 
 ```
 
-Un analisis despues de realizar el data frame es que no existen valores para el mes de Julio.
-```{r}
-tabla <- meses %>% group_by(mes) %>%  select(NSC)  %>%
-  
-  summarise(across(everything(),list(
-    mean=~mean(.,na.rm=TRUE),
-    length=~length(.),
-    q25=~quantile(.,0.25),
-    mediana=~quantile(.,0.5),
-    q75=~quantile(.,0.75),
-    sd=~sd(.,na.rm=TRUE),
-    skewness=~skewness(.,na.rm=TRUE),
-    kurtosis=~kurtosis(.,na.rm=TRUE)))) 
-names(tabla) = c("tipo" ,"mean","length","q25","mediana" , "q75","sd","skewness" ,"kurtosis") 
-tabla 
-```
-
-```{r}
-
-library(ggridges)
-meses %>% ggplot( aes(x = NSC, y = mes,fill=mes)) +
-  geom_density_ridges2()
-```
-
-- Y si en vez de analizar los datos por mes los analizasemos por cada año que hay contenidos en los datos?
-
-```{r}
-sonido_anyo<- sonido_tidy %>% filter(year(Fecha)== 2020) %>% mutate(anyo = '2020')
-sonido_anyo<- sonido_tidy %>% filter(year(Fecha)== 2021) %>% mutate(anyo = '2021') %>% union(sonido_anyo)
-sonido_anyo<- sonido_tidy %>% filter(year(Fecha)== 2022) %>% mutate(anyo = '2022') %>% union(sonido_anyo)
-```
-
-
-```{r}
-sonido_anyo %>% ggplot( aes(x = NSC, y = anyo,fill=anyo)) +
-  geom_density_ridges()
-```
-
-- Vamos a analizar el nivel sonoro continuo curante el mes de marzo de 2022 para ver cuánto y como aumenta durante el periodo de fallas.
+¿Cómo aumentan los niveles de ruido durante las fallas?
 
 ```{r}
 meses %>% filter(mes == "Marzo" & year(Fecha) == 2022) %>% 
@@ -505,4 +551,22 @@ meses %>% filter(mes == "Marzo" & year(Fecha) == 2022) %>%
   geom_smooth(method = "loess", formula = y ~ x) +
   geom_point() + facet_wrap(~CALLE)
 ```
+
+## Casa / Empresa
+
+¿Si quisiésemos comprar una casa o montar una empresa en qué lugar nos interesaría más colocarla?
+
+Para la casa hemos pensado que es conveniente un lugar con poco ruido ya que puede llegar a ser molesto y para la empresa hemos pensado lo contrario ya que un mayor nivel de ruido puede suponer una mayor afluencia de gente lo cual se transmite en posibles clientes.
+
+```{r}
+ggplot(sonido_tidy, aes(x = Fecha, y = NSC,col='blue')) +
+  geom_line(aes(xend = lead(Fecha), yend = lead(NSC))) +
+  facet_wrap(~CALLE) + theme(axis.text.x = element_blank(),
+                             axis.ticks = element_blank())
+```
+
+Como se puede observar las mejores calles a mirar un piso serian Sueca 2 ya que usualmente no es muy ruidosa, además otras calles interesantes a ver serian maesto jose, general prim, puerto 21 o incluso cuba 3 son tambien calles con poco ruido, exceptuando algunos picos que pueden estar relacionados con dias festivos como las fallas.
+
+Por el contrario si quisiesemos montar una empresa nos interesaria montarla en las que mas ruido tengan ya que esto significara que estaran más transitadas por personas y ayudara a que se vea mas la marca, entonces nos interesaria montar nuestro negocio en calles como caiz 3, cadiz 16 o carles 32.
+
 
