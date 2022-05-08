@@ -403,7 +403,7 @@ Por el contrario si quisiesemos montar una empresa nos interesaria montarla en l
 -Las calles que estan cercanas unas de otras tienen una distribucion similar ?
 
 Primero veamos como estan ubicadas en el mapa.
-![](mapa.png)
+![](mapa_mejorado.gif)
 
 
 -¿Que mes es el más ruidoso?
@@ -423,6 +423,7 @@ meses<- sonido_tidy %>% filter(month(Fecha)== 12) %>% mutate(mes = 'Diciembre')%
 
 ```
 
+Un analisis despues de realizar el data frame es que no existen valores para el mes de Julio.
 ```{r}
 tabla <- meses %>% group_by(mes) %>%  select(NSC)  %>%
   
@@ -444,5 +445,18 @@ tabla
 library(ggridges)
 meses %>% ggplot( aes(x = NSC, y = mes,fill=mes)) +
   geom_density_ridges2()
+```
+
+- Y si en vez de analizar los datos por mes los analizasemos por cada año que hay contenidos en los datos?
+
+```{r}
+sonido_anyo<- sonido_tidy %>% filter(year(Fecha)== 2020) %>% mutate(anyo = '2020')
+sonido_anyo<- sonido_tidy %>% filter(year(Fecha)== 2021) %>% mutate(anyo = '2021') %>% union(sonido_anyo)
+sonido_anyo<- sonido_tidy %>% filter(year(Fecha)== 2022) %>% mutate(anyo = '2022') %>% union(sonido_anyo)
+```
+
+```{r}
+sonido_anyo %>% ggplot( aes(x = NSC, y = anyo,fill=anyo)) +
+  geom_density_ridges()
 ```
 
