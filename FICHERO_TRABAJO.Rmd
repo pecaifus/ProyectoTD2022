@@ -308,7 +308,7 @@ Una vez ya hemos hecho un primer análisis de los datos, sabemos cómo están or
 
 ## Horas
 
-*-¿Cuál es la franja horarioa en la que de media hay más ruido?*
+**- ¿Cuál es la franja horarioa en la que de media hay más ruido?**
 
 ```{r}
 sonido_tidy %>%
@@ -369,7 +369,7 @@ tabla
 
 Inspeccionando la tabla observamos que el más con una media más alta es marzo, aspecto que analizaremos más adelanto, además de ser el mes con una mayor desviación estándard. También es de destacar, que a diferencia de las franjas horarias aquí no tenemos el mismo número de observaciones para cada mes, exceptuando Julio, Agosto es el mes del que tenemos menos observaciones.
 
-*-¿Que mes es el más/menos ruidoso?*
+**- ¿Que mes es el más/menos ruidoso?**
 
 Esta pregunta la resolveremos con un gráfico de densidad en el que vamos a representar cada mes con un diagrama y en el eje x el nivel sonoro continuo ya que nos proporciona una media de las franjas horarias.
 
@@ -421,7 +421,7 @@ sonido_anyo %>% ggplot( aes(x = NSC, y = anyo,fill=anyo)) +
   geom_density_ridges()
 ```
 
-*- ¿Cuál fue el año registrado más/menos ruidoso?*
+**- ¿Cuál fue el año registrado más/menos ruidoso?**
 
 ```{r}
 sonido_anyo %>% group_by(anyo) %>%
@@ -436,7 +436,7 @@ sonido_anyo %>% group_by(anyo) %>%
 
 ## Calles
 
-*- ¿Cuál es la calle más/menos ruidosa?*
+**- ¿Cuál es la calle más/menos ruidosa?**
 ```{r}
 sonido_tidy %>% group_by(CALLE) %>%
   summarise(Nivel_sonoro_continuo_medio_maximo = mean(NSC)) %>%
@@ -449,7 +449,7 @@ sonido_tidy %>% group_by(CALLE) %>%
            min(Nivel_sonoro_continuo_medio_minimo))
 ```
 
-*- ¿Cuál es la calle que ha alcanzado el máximo/mínimo nivel de ruido?*
+**- ¿Cuál es la calle que ha alcanzado el máximo/mínimo nivel de ruido?**
 
 ```{r}
 sonido_tidy %>%
@@ -465,7 +465,7 @@ sonido_tidy %>%
            min(Nivel_sonoro_continuo_minimo))
 ```
 
-*- Las calles que estan cercanas unas de otras tienen una distribucion similar?*
+**- Las calles que estan cercanas unas de otras tienen una distribucion similar?**
 
 Primero veamos como estan ubicadas en el mapa.
 ![](mapa_mejorado.gif)
@@ -546,7 +546,7 @@ ggplot(sonido_tidy_festividad, aes(x = Fecha, y = NSC, col = festividad)) +
 
 ```
 
-*- ¿Cómo aumentan los niveles de ruido durante las fallas?*
+**- ¿Cómo aumentan los niveles de ruido durante las fallas?**
 
 ```{r}
 meses %>% filter(mes == "Marzo" & year(Fecha) == 2022) %>% 
@@ -560,7 +560,7 @@ En los dos tipos de gráficos realizados se puede observar claramente como duarn
 
 ## Casa / Empresa
 
-*- ¿Si quisiésemos comprar una casa o montar una empresa en qué lugar nos interesaría más colocarla?*
+**- ¿Si quisiésemos comprar una casa o montar una empresa en qué lugar nos interesaría más colocarla?**
 
 Para la casa hemos pensado que es conveniente un lugar con poco ruido ya que puede llegar a ser molesto y para la empresa hemos pensado lo contrario ya que un mayor nivel de ruido puede suponer una mayor afluencia de gente lo cual se transmite en posibles clientes.
 
