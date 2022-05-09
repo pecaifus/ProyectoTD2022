@@ -270,6 +270,10 @@ Además de lo mencionado realizaremos un analisis de la correlacion con los mét
 ```{r}
 sonido_tidy %>% select(NSC:S23_7) %>% ggpairs()
 
+sonido_tidy %>% select(NSC:S23_7) %>% ggcorr()
+
+sonido_tidy %>% select(NSC:S23_7) %>% pairs()
+
 s1 <- sonido_tidy %>% select(NSC:S23_7)
 cor(s1, method = "spearman")
 cor(s1, method = "pearson")
