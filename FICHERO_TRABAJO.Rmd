@@ -261,7 +261,7 @@ Como podemos ver, los datos acerca de las variables sobre las horas no siguen un
 
 ## Análisis bivariante
 
-Vamos a realizar un analisis bivariante de las variables de sonido que se nos han proporcionado. Para ello utilizaremos la funcion ggPairs para poder tener una representación de las relaciones exitentes entre las variables consideradas.
+Vamos a realizar un analisis bivariante de las variables de sonido que se nos han proporcionado. Para ello utilizaremos la funcion ggPairs y ggcorr para poder tener una representación de las relaciones exitentes entre las variables consideradas.
 
 Además de lo mencionado realizaremos un analisis de la correlacion con los métodos de spearman y pearson de las variables que hemos mencionado anteriormentre, para ver el grado que tienen de relacion de una forma lineal y no lineal.
 
@@ -282,7 +282,7 @@ Como ya se podia prever, las variables siguen una distibucion lineal, además de
 
 # Creación de los estadisticos 
 
-El primer acercamiento que haremos al análsisi más en profundidad es una tabla de estadísticos (cuartil 25, cuartil 75, media, mediana, longitud, desviación estándardm sesgo y kurtosis). Estos nos proporcionarán una primera idea de cómo está distribuida más internamente cada variable.
+El primer acercamiento que haremos al análsisi más en profundidad es una tabla de estadísticos (cuartil 25, cuartil 75, media, mediana, longitud, desviación estándard, sesgo y kurtosis). Estos nos proporcionarán una primera idea de cómo está distribuida más internamente cada variable.
 
 ```{r}
 tabla <- sonido_tidy %>% select(NSC:S23_7)  %>%
@@ -302,15 +302,15 @@ tabla
 
 ```
 
-La mayoría de ellas siguen valores bastante parecidos, como es lógico, la variable S23_7 (la de la noche) es la que presenta valores más pequeños pero su distribución estándard es la más grande debido al contraste entre las últimas/primeras horas y las horas más "centrales" de la noche. También nos llama la atención que la variable SDTN (sonido día-tarde-noche) es la que mpota valores más altos tanto en la media, la mediana como en los cuartiles. Podemos apreciar que el NSC es la que tiene la kurtosis más elevada lo cual nos dice que que la mayoría de los valores están centrados en la media, lo cual tiene mucho sentido ya que es el nivel sonoro continuo.
+La mayoría de ellas siguen valores bastante parecidos, como es lógico, la variable S23_7 (la de la noche) es la que presenta valores más pequeños pero su desviación estándard es la más grande debido al contraste entre las últimas/primeras horas y las horas más "centrales" de la noche. También nos llama la atención que la variable SDTN (sonido día-tarde-noche) es la que toma valores más altos tanto en la media, la mediana como en los cuartiles. Podemos apreciar que el NSC es la que tiene la kurtosis más elevada lo cual nos dice que que la mayoría de los valores están centrados en la media, lo cual tiene mucho sentido ya que es el nivel sonoro continuo.
 
 # Preguntas a resolver
 
-Una vez ya hemos hecho un primer análisis de los datos, sabemos cómo están organizados y distribuidos. Debemos plantearnos las preguntas que queramos resolver.
+Una vez ya hemos hecho un primer análisis de los datos, sabemos cómo están organizados y distribuidos. Debemos plantearnos las preguntas que queramos resolver para poder obtener un análisis más profundo de los datos.
 
 ## Horas
 
-- **¿Cuál es la franja horarioa en la que de media hay más ruido?**
+- **¿Cuál es la franja horaria en la que de media hay más ruido?**
 
 ```{r}
 sonido_tidy %>%
@@ -350,7 +350,7 @@ meses<- sonido_tidy %>% filter(month(Fecha)== 12) %>% mutate(mes = 'Diciembre')%
 
 ```
 
-Tras un perimer análisis, podemos ver que no existen valores para el mes de Julio.
+Tras un primer análisis, podemos ver que no existen valores para el mes de Julio, lo cual provoca que exista una incosistencia y no podamos obtener los mejores resultados.
 
 Empezaremos creando una tabla de estadísticos para cada mes, como hicimos con las horas.
 
@@ -369,7 +369,7 @@ names(tabla) = c("mes" ,"mean","length","q25","mediana" , "q75","sd","skewness" 
 tabla 
 ```
 
-*Inspeccionando la tabla observamos que el más con una media más alta es marzo, aspecto que analizaremos más adelanto, además de ser el mes con una mayor desviación estándard. También es de destacar, que a diferencia de las franjas horarias aquí no tenemos el mismo número de observaciones para cada mes, exceptuando Julio, Agosto es el mes del que tenemos menos observaciones.*
+*Inspeccionando la tabla observamos que el que tiene una media más alta es marzo, aspecto que analizaremos más adelante, además de ser el mes con una mayor desviación estándard. También es de destacar, que a diferencia de las franjas horarias aquí no tenemos el mismo número de observaciones para cada mes, exceptuando Julio, Agosto es el mes del que tenemos menos observaciones.*
 
 
 - **¿Que mes es el más/menos ruidoso?**
@@ -380,8 +380,7 @@ Esta pregunta la resolveremos con un gráfico de densidad en el que vamos a repr
 meses %>% ggplot( aes(x = NSC, y = mes, fill = mes)) +
   geom_density_ridges2()
 ```
-De la tabla de estadísticos es muy destacable la kurtosis del año 2021, lo cuál nos indica que sus datos están bastante centrados. Eso puede ser debido a la falta de observaciones para los otros dos años
-Podemos observar que mayo es el mes cuya curva está más plana, lo cuál significa que los datos están más distribuidos y alcanza picos más altos.
+Podemos observar que marzo es el mes cuya curva está más plana, lo cuál significa que los datos están más distribuidos y alcanza picos más altos. Además podemos ver que los meses que tienen los valores más centrados son Abril,Junio y Noviembre.
 
 ```{r}
 meses %>% group_by(mes) %>%
@@ -425,6 +424,7 @@ tabla
 sonido_anyo %>% ggplot( aes(x = NSC, y = anyo,fill=anyo)) +
   geom_density_ridges()
 ```
+De la tabla de estadísticos es muy destacable la kurtosis del año 2021, lo cuál nos indica que sus datos están bastante centrados. Eso puede ser debido a la falta de observaciones para los otros dos años. Hay que anotar que este análisis no es muy óptimo debido a la falta de observaciones para los años 2020 y 2022, es destacable la desviación estandar del 2022 esto se puede atribuir a la vuelta de las fallas y una vuelta a una normalidad pre-covid.
 
 - **¿Cuál fue el año registrado más/menos ruidoso?**
 
@@ -519,7 +519,7 @@ ggplot(cdoctor_cadiz3, aes(x = Fecha, y = NSC,col='red')) +
                              axis.ticks = element_blank())
 ```
 
-*Como podemos observar en las gráficas mostradas, en general la mayor parte de las gráficas coinciden excepto en elagunos momentos, sin embargo, si que podemos observar como en esos momentos donde en alguna  gráfica el indice de sonido es mayor o da un repunte, en las otras gráficas también se observa dicho resalto o repunte*
+*Como podemos observar en las gráficas mostradas, en general la mayor parte de las gráficas coinciden excepto en algunos momentos, sin embargo, si que podemos observar como en esos momentos donde en alguna  gráfica el indice de sonido es mayor o da un repunte, en las otras gráficas también se observa dicho resalto o repunte*
 
 
 ## Festvivdad
