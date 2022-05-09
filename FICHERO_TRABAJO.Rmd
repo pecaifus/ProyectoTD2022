@@ -468,6 +468,7 @@ Las calles que estan cercanas unas de otras tienen una distribucion similar ?
 Primero veamos como estan ubicadas en el mapa.
 ![](mapa_mejorado.gif)
 
+Vamos a realizar un estudio de sensores de ruido dos a dos con los que se encuentren más cerca los unos de los otros.
 ```{r}
 csueca32_puri21<- sonido_tidy %>% filter(CALLE == 'sueca32'| CALLE == 'puerto21' )
 csueca2_vivons<- sonido_tidy %>% filter(CALLE == 'sueca2'| CALLE == 'sueca_denia' )
@@ -475,33 +476,34 @@ creina_carlos <- sonido_tidy %>% filter(CALLE == 'carles34'| CALLE == 'reina_mar
 cdoctor_cadiz3 <- sonido_tidy %>% filter(CALLE == 'cadiz3'| CALLE == 'doctor_serrano')
 ```
 
-
+Primero realizaremos una serie de gráficos de lineas para observar si aumentan o no al mismo tiempo.
 ```{r}
-ggplot(csueca32_puri21, aes(x = Fecha, y = NSC,col='blue')) +
+ggplot(csueca32_puri21, aes(x = Fecha, y = NSC,col='red')) +
   geom_line(aes(xend = lead(Fecha), yend = lead(NSC))) +
   facet_wrap(~CALLE) + theme(axis.text.x = element_blank(),
                              axis.ticks = element_blank())
 ```
 ```{r}
-ggplot(csueca2_vivons, aes(x = Fecha, y = NSC,col='blue')) +
-  geom_line(aes(xend = lead(Fecha), yend = lead(NSC))) +
-  facet_wrap(~CALLE) + theme(axis.text.x = element_blank(),
-                             axis.ticks = element_blank())
-```
-
-```{r}
-ggplot(creina_carlos, aes(x = Fecha, y = NSC,col='blue')) +
+ggplot(csueca2_vivons, aes(x = Fecha, y = NSC,col='red')) +
   geom_line(aes(xend = lead(Fecha), yend = lead(NSC))) +
   facet_wrap(~CALLE) + theme(axis.text.x = element_blank(),
                              axis.ticks = element_blank())
 ```
 
 ```{r}
-ggplot(cdoctor_cadiz3, aes(x = Fecha, y = NSC,col='blue')) +
+ggplot(creina_carlos, aes(x = Fecha, y = NSC,col='red')) +
   geom_line(aes(xend = lead(Fecha), yend = lead(NSC))) +
   facet_wrap(~CALLE) + theme(axis.text.x = element_blank(),
                              axis.ticks = element_blank())
 ```
+
+```{r}
+ggplot(cdoctor_cadiz3, aes(x = Fecha, y = NSC,col='red')) +
+  geom_line(aes(xend = lead(Fecha), yend = lead(NSC))) +
+  facet_wrap(~CALLE) + theme(axis.text.x = element_blank(),
+                             axis.ticks = element_blank())
+```
+
 
 ## Festvivdad
 
@@ -551,6 +553,7 @@ meses %>% filter(mes == "Marzo" & year(Fecha) == 2022) %>%
   geom_smooth(method = "loess", formula = y ~ x) +
   geom_point() + facet_wrap(~CALLE)
 ```
+En los dos tipos de gráficos realizados se puede observar claramente como duarnte el periodo de fallas (tanto en general durante los meses como en los días en concreto del mes de marzo) los niveles sonoros aumentan de forma exponencial.
 
 ## Casa / Empresa
 
