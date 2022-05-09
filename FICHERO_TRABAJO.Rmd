@@ -63,7 +63,7 @@ knit_hooks$set(inline = function(x) {
 # Instalación automática de paquetes
 
 
-```{r echo = F}
+```{r echo = F, include = F}
 
 # Especificamos las librerías necesarias en esta lista
 
@@ -199,8 +199,6 @@ Vamos a cambiar el tipo de variables de Fecha y Calle, La primera será de tipo 
 ```{r}
 sonido_tidy$Fecha <- ymd(sonido_tidy$Fecha)
 sonido_tidy$CALLE <- as.factor(sonido_tidy$CALLE)
-class(sonido_tidy$Fecha)
-class(sonido_tidy$CALLE)
 ```
 
 
@@ -312,7 +310,7 @@ Una vez ya hemos hecho un primer análisis de los datos, sabemos cómo están or
 
 ## Horas
 
-**- ¿Cuál es la franja horarioa en la que de media hay más ruido?**
+- **¿Cuál es la franja horarioa en la que de media hay más ruido?**
 
 ```{r}
 sonido_tidy %>%
@@ -330,7 +328,7 @@ sonido_tidy %>%
            min(Nivel_sonoro_continuo_medio_minimo))
 ```
 
-Como era de esperar, la que más ruido proporciona es la de entre las 7 y las 19 y la que menos es la de entre las 23 y las 7.
+*Como era de esperar, la que más ruido proporciona es la de entre las 7 y las 19 y la que menos es la de entre las 23 y las 7.*
 
 ## Meses
 
@@ -371,9 +369,10 @@ names(tabla) = c("mes" ,"mean","length","q25","mediana" , "q75","sd","skewness" 
 tabla 
 ```
 
-Inspeccionando la tabla observamos que el más con una media más alta es marzo, aspecto que analizaremos más adelanto, además de ser el mes con una mayor desviación estándard. También es de destacar, que a diferencia de las franjas horarias aquí no tenemos el mismo número de observaciones para cada mes, exceptuando Julio, Agosto es el mes del que tenemos menos observaciones.
+*Inspeccionando la tabla observamos que el más con una media más alta es marzo, aspecto que analizaremos más adelanto, además de ser el mes con una mayor desviación estándard. También es de destacar, que a diferencia de las franjas horarias aquí no tenemos el mismo número de observaciones para cada mes, exceptuando Julio, Agosto es el mes del que tenemos menos observaciones.*
 
-**- ¿Que mes es el más/menos ruidoso?**
+
+- **¿Que mes es el más/menos ruidoso?**
 
 Esta pregunta la resolveremos con un gráfico de densidad en el que vamos a representar cada mes con un diagrama y en el eje x el nivel sonoro continuo ya que nos proporciona una media de las franjas horarias.
 
@@ -393,7 +392,9 @@ meses %>% group_by(mes) %>%
   summarise(alto = mean(NSC)) %>% 
   filter(alto == max(alto))
 ```
-Enero es el mes con menor ruido medio y marzo el mes con mayor ruido medio
+
+*Enero es el mes con menor ruido medio y marzo el mes con mayor ruido medio.*
+
 
 ## Años
 
@@ -425,7 +426,7 @@ sonido_anyo %>% ggplot( aes(x = NSC, y = anyo,fill=anyo)) +
   geom_density_ridges()
 ```
 
-**- ¿Cuál fue el año registrado más/menos ruidoso?**
+- **¿Cuál fue el año registrado más/menos ruidoso?**
 
 ```{r}
 sonido_anyo %>% group_by(anyo) %>%
@@ -437,10 +438,12 @@ sonido_anyo %>% group_by(anyo) %>%
   filter(alto == max(alto))
 ```
 
+*Como podemos oobservar el año registrado más ruidoso es el año 2022. Por otro lado, el año registrado menos ruidoso es el año 2020.*
+
 
 ## Calles
 
-**- ¿Cuál es la calle más/menos ruidosa?**
+- **¿Cuál es la calle más/menos ruidosa?**
 ```{r}
 sonido_tidy %>% group_by(CALLE) %>%
   summarise(Nivel_sonoro_continuo_medio_maximo = mean(NSC)) %>%
@@ -453,7 +456,10 @@ sonido_tidy %>% group_by(CALLE) %>%
            min(Nivel_sonoro_continuo_medio_minimo))
 ```
 
-**- ¿Cuál es la calle que ha alcanzado el máximo/mínimo nivel de ruido?**
+*Como podemos observar, la calle mas ruidosa es la calle Cádiz3r otro lado la calle menos ruidosa es la calle general Prim.*
+
+
+- **¿Cuál es la calle que ha alcanzado el máximo/mínimo nivel de ruido?**
 
 ```{r}
 sonido_tidy %>%
@@ -469,7 +475,10 @@ sonido_tidy %>%
            min(Nivel_sonoro_continuo_minimo))
 ```
 
-**- Las calles que estan cercanas unas de otras tienen una distribucion similar?**
+*Como podemos observar, la calle que ha alcanzado el máximo nivel de ruido es la calle Reina Maria. Por otro lado la calle que ha alcanzado el mínimo nivel de ruido es la calle general Prim.*
+
+
+- **Las calles que estan cercanas unas de otras tienen una distribucion similar?**
 
 Primero veamos como estan ubicadas en el mapa.
 ![](mapa_mejorado.gif)
@@ -509,6 +518,8 @@ ggplot(cdoctor_cadiz3, aes(x = Fecha, y = NSC,col='red')) +
   facet_wrap(~CALLE) + theme(axis.text.x = element_blank(),
                              axis.ticks = element_blank())
 ```
+
+*Como podemos observar en las gráficas mostradas, en general la mayor parte de las gráficas coinciden excepto en elagunos momentos, sin embargo, si que podemos observar como en esos momentos donde en alguna  gráfica el indice de sonido es mayor o da un repunte, en las otras gráficas también se observa dicho resalto o repunte*
 
 
 ## Festvivdad
@@ -550,7 +561,7 @@ ggplot(sonido_tidy_festividad, aes(x = Fecha, y = NSC, col = festividad)) +
 
 ```
 
-**- ¿Cómo aumentan los niveles de ruido durante las fallas?**
+- **¿Cómo aumentan los niveles de ruido durante las fallas?**
 
 ```{r}
 meses %>% filter(mes == "Marzo" & year(Fecha) == 2022) %>% 
@@ -560,11 +571,12 @@ meses %>% filter(mes == "Marzo" & year(Fecha) == 2022) %>%
   geom_point() + facet_wrap(~CALLE)
 ```
 
-En los dos tipos de gráficos realizados se puede observar claramente como duarnte el periodo de fallas (tanto en general durante los meses como en los días en concreto del mes de marzo) los niveles sonoros aumentan de forma exponencial.
+*En los dos tipos de gráficos realizados se puede observar claramente como duarnte el periodo de fallas (tanto en general durante los meses como en los días en concreto del mes de marzo) los niveles sonoros aumentan de forma exponencial.*
+
 
 ## Casa / Empresa
 
-**- ¿Si quisiésemos comprar una casa o montar una empresa en qué lugar nos interesaría más colocarla?**
+- **¿Si quisiésemos comprar una casa o montar una empresa en qué lugar nos interesaría más colocarla?**
 
 Para la casa hemos pensado que es conveniente un lugar con poco ruido ya que puede llegar a ser molesto y para la empresa hemos pensado lo contrario ya que un mayor nivel de ruido puede suponer una mayor afluencia de gente lo cual se transmite en posibles clientes.
 
@@ -575,8 +587,12 @@ ggplot(sonido_tidy, aes(x = Fecha, y = NSC,col='blue')) +
                              axis.ticks = element_blank())
 ```
 
-Como se puede observar las mejores calles a mirar un piso serian Sueca 2 ya que usualmente no es muy ruidosa, además otras calles interesantes a ver serian maesto jose, general prim, puerto 21 o incluso cuba 3 son tambien calles con poco ruido, exceptuando algunos picos que pueden estar relacionados con dias festivos como las fallas.
+- Lugar de interés para la casa:
 
-Por el contrario si quisiesemos montar una empresa nos interesaria montarla en las que mas ruido tengan ya que esto significara que estaran más transitadas por personas y ayudara a que se vea mas la marca, entonces nos interesaria montar nuestro negocio en calles como caiz 3, cadiz 16 o carles 32.
+*Como se puede observar las mejores calles a mirar un piso serian Sueca 2 ya que usualmente no es muy ruidosa, además otras calles interesantes a ver serian maesto jose, general prim, puerto 21 o incluso cuba 3 son tambien calles con poco ruido, exceptuando algunos picos que pueden estar relacionados con dias festivos como las fallas.*
+
+- Lugar de interés para la empresa:
+
+*Por el contrario si quisiesemos montar una empresa nos interesaria montarla en las que mas ruido tengan ya que esto significara que estaran más transitadas por personas y ayudara a que se vea mas la marca, entonces nos interesaria montar nuestro negocio en calles como caiz 3, cadiz 16 o carles 32.*
 
 
