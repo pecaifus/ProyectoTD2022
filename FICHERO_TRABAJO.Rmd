@@ -539,6 +539,7 @@ ggplot(sonido_tidy_festividad, aes(x = Fecha, y = NSC, col = festividad)) +
 
 ```
 
+*Como podemos observar, las fiestas de navidad tienen una distribucion muy parecida a la ordinal, mientras que en el periodo de fallas crece desmesuramdamente esto es normal ya que, durante el periodo de fallas hay explosiones de petardos además de que aumenta la concentacion de personas en determinadas zonas.*
 - **¿Cómo aumentan los niveles de ruido durante las fallas?**
 
 ```{r}
@@ -573,5 +574,4 @@ ggplot(sonido_tidy, aes(x = Fecha, y = NSC,col='blue')) +
 - Lugar de interés para la empresa:
 
 *Por el contrario si quisiesemos montar una empresa nos interesaria montarla en las que mas ruido tengan ya que esto significara que estaran más transitadas por personas y ayudara a que se vea mas la marca, entonces nos interesaria montar nuestro negocio en calles como caiz 3, cadiz 16 o carles 32.*
-
 
