@@ -233,9 +233,39 @@ alto <- alto %>% mutate(NSC = "alto")
 categorico <- bind_rows(bajo, medio, alto)
 amb <- categorico %>% count(NSC) %>% select(n)
 chisq.test(x = amb, correct = FALSE)
+
+bajo <- sonido_tidy %>% filter(S7_19<= 60)
+medio <- sonido_tidy %>% filter(S7_19 > 60 & NSC < 75)
+alto <- sonido_tidy %>% filter(S7_19 >= 75)
+bajo <- bajo %>% mutate(NSC = "bajo")
+medio <- medio %>% mutate(NSC = "medio")
+alto <- alto %>% mutate(NSC = "alto")
+categorico <- bind_rows(bajo, medio, alto)
+cats7_19 <- categorico %>% count(NSC) %>% select(n)
+
+bajo <- sonido_tidy %>% filter(S19_23<= 60)
+medio <- sonido_tidy %>% filter(S19_23 > 60 & NSC < 75)
+alto <- sonido_tidy %>% filter(S19_23 >= 75)
+bajo <- bajo %>% mutate(NSC = "bajo")
+medio <- medio %>% mutate(NSC = "medio")
+alto <- alto %>% mutate(NSC = "alto")
+categorico <- bind_rows(bajo, medio, alto)
+catsS19_23 <- categorico %>% count(NSC) %>% select(n)
+
+bajo <- sonido_tidy %>% filter(S23_7<= 60)
+medio <- sonido_tidy %>% filter(S23_7 > 60 & NSC < 75)
+alto <- sonido_tidy %>% filter(S23_7 >= 75)
+bajo <- bajo %>% mutate(NSC = "bajo")
+medio <- medio %>% mutate(NSC = "medio")
+alto <- alto %>% mutate(NSC = "alto")
+categorico <- bind_rows(bajo, medio, alto)
+catsS23_7 <- categorico %>% count(NSC) %>% select(n)
+
+amb<-bind_cols(catsS19_23,catsS23_7,cats7_19)
+chisq.test(x = amb, correct = FALSE)
 ```
 
-Como el p value sale un valor muy bajo, podemos rechazar la hipótesis nula y concluimos que existe dependencia entre las variables.
+Como el p value sale un valor muy bajo, podemos rechazar la hipótesis nula y concluimos que existe dependencia entre las variables de el Nivel sonoro continuo, hemos realizado el mismo proceso pero esta vez para  cada variable asociada a n intervalo de tiempo y podemos afirmar que como el p value es identico las variables S7_19, s19_23 , s23_7 son dependientes.
 
 ## Análisis bivariante
 
