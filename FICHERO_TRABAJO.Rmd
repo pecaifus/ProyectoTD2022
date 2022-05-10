@@ -99,50 +99,18 @@ Los ficheros ya están descargados en una carpeta llamada 'data'. A partir de la
 
 
 ```{r}
-library(readr)
-cadiz3 <- read_csv("data/cadiz3.csv", col_types = cols
-                   (dateObserved = col_date(format = "%Y-%m-%d")))
-cadiz3 <- cadiz3 %>% mutate(calle = "cadiz3")
-cadiz16 <- read_csv("data/cadiz16.csv", col_types = cols
-                    (dateObserved = col_date(format = "%Y-%m-%d")))
-cadiz16 <- cadiz16 %>% mutate(calle = "cadiz16")
-carles34 <- read_csv("data/carles34.csv", col_types = cols
-                     (dateObserved = col_date(format = "%Y-%m-%d")))
-carles34 <- carles34 %>% mutate(calle = "carles34")
-cuba3 <- read_csv("data/cuba3.csv", col_types = cols
-                  (dateObserved = col_date(format = "%Y-%m-%d")))
-cuba3 <- cuba3 %>% mutate(calle = "cuba3")
-doctor_serrano <- read_csv("data/doctor_serrano.csv", col_types = cols
-                           (dateObserved = col_date(format = "%Y-%m-%d")))
-doctor_serrano <- doctor_serrano %>% mutate(calle = "doctor_serrano")
-general_prim <- read_csv("data/general_prim.csv", col_types = cols
-                         (dateObserved = col_date(format = "%Y-%m-%d")))
-general_prim <- general_prim %>% mutate(calle = "general_prim")
-maestro_jose <- read_csv("data/maestro_jose.csv", col_types = cols
-                         (dateObserved = col_date(format = "%Y-%m-%d")))
-maestro_jose <- maestro_jose %>% mutate(calle = "maestro_jose")
-puerto21 <- read_csv("data/puerto21.csv", col_types = cols
-                     (dateObserved = col_date(format = "%Y-%m-%d")))
-puerto21 <- puerto21 %>% mutate(calle = "puerto21")
-reina_maria <- read_csv("data/reina_maria.csv", col_types = cols
-                        (dateObserved = col_date(format = "%Y-%m-%d")))
-reina_maria <- reina_maria %>% mutate(calle = "reina_maria")
-sueca2 <- read_csv("data/sueca2.csv", col_types = cols
-                   (dateObserved = col_date(format = "%Y-%m-%d")))
-sueca2 <- sueca2 %>% mutate(calle = "sueca2")
-sueca32 <- read_csv("data/sueca32.csv", col_types = cols
-                    (dateObserved = col_date(format = "%Y-%m-%d")))
-sueca32 <- sueca32 %>% mutate(calle = "sueca32")
-sueca61 <- read_csv("data/sueca61.csv", col_types = cols
-                    (dateObserved = col_date(format = "%Y-%m-%d")))
-sueca61 <- sueca61 %>% mutate(calle = "sueca61")
-sueca_denia <- read_csv("data/sueca-denia.csv", col_types = cols
-                        (dateObserved = col_date(format = "%Y-%m-%d")))
-sueca_denia <- sueca_denia %>% mutate(calle = "sueca_denia")
-vivons_cadiz <- read_csv("data/vivons_cadiz.csv", col_types = cols
-                         (dateObserved = col_date(format = "%Y-%m-%d")))
-vivons_cadiz <- vivons_cadiz %>% mutate(calle = "vivons_cadiz")
+datos <- list.files(path = "./data")
+datos <- lapply(datos, FUN = function(x){
+  read_csv(paste("data/", x, sep = ""), col_types = cols
+                   (dateObserved = col_date(format = "%Y-%m-%d"))) %>% 
+  mutate(CALLE = str_remove(string = x, pattern = ".csv"))
+})
 
+primero <- datos[[1]]
+for (i in 2:length(datos)){
+  primero <- bind_rows(primero, datos[[i]])
+}
+sonido_tidy <- primero
 
 ```
 
@@ -151,12 +119,6 @@ vivons_cadiz <- vivons_cadiz %>% mutate(calle = "vivons_cadiz")
 Ahora vamos a usar la función bind_rows de la librería 'dplyr' para unir todos los data frames anteriores en uno solo. Esto es posible ya que todos poseen las mismas variables, por tanto, lo que estamos haciendo es unir las observaciones una debajo de otra
 
 ```{r}
-library(dplyr)
-sonido_tidy<-bind_rows(cadiz16, cadiz3, carles34, cuba3, 
-                       doctor_serrano, general_prim, maestro_jose, 
-                       puerto21, reina_maria, sueca_denia,sueca2, 
-                       sueca32, sueca61, vivons_cadiz)
-
 sonido_tidy <- sonido_tidy %>% select(6:12)
 head(sonido_tidy)
 tail(sonido_tidy)
@@ -244,10 +206,11 @@ Podemos afirmar que los datos están bastante distribuidos. La regla del boxplot
 Ahora analizaremos si las variables siguen una distribución gaussiana. Para ello vamos a utilizar diferentes tipos de gráficos
 ```{r}
 sonido_tidy %>% select(S7_19,S19_23,S23_7) %>%
-  pivot_longer(names_to = 'horas', values_to = 'sonido',S7_19:S23_7) %>%
+  pivot_longer(names_to = 'horas', values_to = 'sonido',S7_19:S23_7) %>% 
   group_by(horas) %>%  ggplot(aes(x = sonido)) +
   geom_histogram(fill = "aquamarine", colour = "darkblue", size = .3) +
   scale_y_continuous( name = "Num. Oservaciones" ) +
+  geom_vline(xintercept = mean(sonido_tidy$NSC), col = "blue", lty = 2) +
   scale_x_continuous( name = "Sonido" ) +
   facet_wrap(~horas)
 
@@ -258,6 +221,21 @@ qqPlot(sonido_tidy$S23_7)
 ```
 
 Como podemos ver, los datos acerca de las variables sobre las horas no siguen una distribución gaussiana debido a la alta frecuencia de los valores elevados. 
+
+Ahora vamos a comprovar si existe dependencia entre v. Para ellos nos definimos uno intervalos de la variable NSC que consideramos alto (> 75), medio (<75 & >60) y bajo(<60). Usaremos el test $\chi^2$
+```{r}
+bajo <- sonido_tidy %>% filter(NSC <= 60)
+medio <- sonido_tidy %>% filter(NSC > 60 & NSC < 75)
+alto <- sonido_tidy %>% filter(NSC >= 75)
+bajo <- bajo %>% mutate(NSC = "bajo")
+medio <- medio %>% mutate(NSC = "medio")
+alto <- alto %>% mutate(NSC = "alto")
+categorico <- bind_rows(bajo, medio, alto)
+amb <- categorico %>% count(NSC) %>% select(n)
+chisq.test(x = amb, correct = FALSE)
+```
+
+Como el p value sale un valor muy bajo, podemos rechazar la hipótesis nula y concluimos que existe dependencia entre las variables.
 
 ## Análisis bivariante
 
@@ -486,7 +464,7 @@ Primero veamos como estan ubicadas en el mapa.
 Vamos a realizar un estudio de sensores de ruido dos a dos con los que se encuentren más cerca los unos de los otros.
 ```{r}
 csueca32_puri21<- sonido_tidy %>% filter(CALLE == 'sueca32'| CALLE == 'puerto21' )
-csueca2_vivons<- sonido_tidy %>% filter(CALLE == 'sueca2'| CALLE == 'sueca_denia' )
+csueca2_vivons<- sonido_tidy %>% filter(CALLE == 'sueca2'| CALLE == 'sueca-denia' )
 creina_carlos <- sonido_tidy %>% filter(CALLE == 'carles34'| CALLE == 'reina_maria')
 cdoctor_cadiz3 <- sonido_tidy %>% filter(CALLE == 'cadiz3'| CALLE == 'doctor_serrano')
 ```
@@ -565,10 +543,11 @@ ggplot(sonido_tidy_festividad, aes(x = Fecha, y = NSC, col = festividad)) +
 
 ```{r}
 meses %>% filter(mes == "Marzo" & year(Fecha) == 2022) %>% 
-  mutate(dia = day(Fecha)) %>% 
+  mutate(dia = day(Fecha)) %>% group_by(CALLE) %>% 
   ggplot(aes(x = dia, y = NSC, col = CALLE)) +
   geom_smooth(method = "loess", formula = y ~ x) +
-  geom_point() + facet_wrap(~CALLE)
+  geom_point() + facet_wrap(~CALLE) + 
+  geom_hline(yintercept = mean(meses$NSC), lty = 2, col = "red")
 ```
 
 *En los dos tipos de gráficos realizados se puede observar claramente como duarnte el periodo de fallas (tanto en general durante los meses como en los días en concreto del mes de marzo) los niveles sonoros aumentan de forma exponencial.*
