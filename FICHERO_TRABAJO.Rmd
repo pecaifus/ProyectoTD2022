@@ -95,7 +95,7 @@ Sueca-Denia, Cádiz 3, Cádiz 16, Cuba 3, Sueca 2, Sueca 32, Sueca 61, Carles, C
 
 # Importación de los datos
 
-Los ficheros ya están descargados en una carpeta llamada 'data'. A partir de la librería 'readr' los importaremos a nuestro entorno de trabajo. Además vamos a aprovechar este paso para añadirle a cada uno de los dataframe una columna llamada 'calle' que indique la calle de la que proviene cada obervación. Esto nos será muy útil más adelante
+Los ficheros ya están descargados en una carpeta llamada 'data'. A partir de la librería 'readr' los importaremos a nuestro entorno de trabajo. Además vamos a aprovechar este paso para añadirle a cada uno de los dataframe una columna llamada 'calle' que indique la calle de la que proviene cada obervación. Esto nos será muy útil más adelante.
 
 
 ```{r}
@@ -116,7 +116,7 @@ sonido_tidy <- primero
 
 # Unión de los datos en un solo dataframe
 
-Ahora vamos a usar la función bind_rows de la librería 'dplyr' para unir todos los data frames anteriores en uno solo. Esto es posible ya que todos poseen las mismas variables, por tanto, lo que estamos haciendo es unir las observaciones una debajo de otra
+Ahora vamos a usar la función bind_rows de la librería 'dplyr' para unir todos los data frames anteriores en uno solo. Esto es posible ya que todos poseen las mismas variables, por tanto, lo que estamos haciendo es unir las observaciones una debajo de otra.
 
 ```{r}
 sonido_tidy <- sonido_tidy %>% select(6:12)
@@ -129,7 +129,7 @@ tail(sonido_tidy)
 
 ## Cambiamos los nombres de las variables
 
-Para poder entender mejor qué información contiene nuestros datos nos hemos fijado en la página web de origen y nos hemos dado cuenta de qué nos proporciona cada variable. Les cambiaremos los nombres para poder trabajar de forma más cómoda:
+Para poder entender mejor qué información contiene nuestros datos, nos hemos fijado en la página web de origen y nos hemos dado cuenta de qué nos proporciona cada variable. Les cambiaremos los nombres para poder trabajar de forma más cómoda:
 
 ***NSC*** <- Nivel sonoro continuo (LAeq)
 
@@ -166,13 +166,13 @@ sonido_tidy$CALLE <- as.factor(sonido_tidy$CALLE)
 
 ## Imputación de los datos
 
-En la observación del summary hemos observado que los datos contienen algunas inconsistencias como es el hecho de que aparecen valores infinitos. Para solucionar este problema y que los estadísticos que realizaremos a posteriori tengan un valor más próximo al real, realizaremos una imputación cambiando el valor inf por el máximo de esa calle para variable.
+En la observación del summary hemos observado que los datos contienen algunas inconsistencias como es el hecho de que aparecen valores infinitos. Para solucionar este problema y que los estadísticos que realizaremos a posteriori tengan un valor más próximo al real, realizaremos una imputación cambiando el valor inf por el máximo de esa calle para cada variable.
 
 ```{r}
 sonido_tidy%>% filter(S19_23 == Inf|S7_19 == Inf) 
 ```
 
-Ahora como podemos observar los problemas se encuentran en las calles cadiz16 y maestro jose, procedemos a la imputación.
+Ahora, como podemos observar, los problemas se encuentran en las calles cadiz16 y maestro jose, procedemos a la imputación.
 
 ```{r}
 maximo <- sonido_tidy %>%
@@ -222,7 +222,7 @@ qqPlot(sonido_tidy$S23_7)
 
 Como podemos ver, los datos acerca de las variables sobre las horas no siguen una distribución gaussiana debido a la alta frecuencia de los valores elevados. 
 
-Ahora vamos a comprovar si existe dependencia entre v. Para ellos nos definimos uno intervalos de la variable NSC que consideramos alto (> 75), medio (<75 & >60) y bajo(<60). Usaremos el test $\chi^2$
+Ahora vamos a comprovar si existe dependencia entre variables. Para ello, nos definimos unos intervalos de la variable NSC que consideramos alto (> 75), medio (<75 & >60) y bajo(<60). Usaremos el test $\chi^2$
 ```{r}
 bajo <- sonido_tidy %>% filter(NSC <= 60)
 medio <- sonido_tidy %>% filter(NSC > 60 & NSC < 75)
@@ -269,9 +269,9 @@ Como el p value sale un valor muy bajo, podemos rechazar la hipótesis nula y co
 
 ## Análisis bivariante
 
-Vamos a realizar un analisis bivariante de las variables de sonido que se nos han proporcionado. Para ello utilizaremos la funcion ggPairs y ggcorr para poder tener una representación de las relaciones exitentes entre las variables consideradas.
+Vamos a realizar un análisis bivariante de las variables de sonido que se nos han proporcionado. Para ello utilizaremos la función ggPairs y ggcorr para poder tener una representación de las relaciones exitentes entre las variables consideradas.
 
-Además de lo mencionado realizaremos un analisis de la correlacion con los métodos de spearman y pearson de las variables que hemos mencionado anteriormentre, para ver el grado que tienen de relacion de una forma lineal y no lineal.
+Además de lo mencionado realizaremos un análisis de la correlación con los métodos de spearman y pearson de las variables que hemos mencionado anteriormentre, para ver el grado que tienen de relación de una forma lineal y no lineal.
 
 ```{r}
 sonido_tidy %>% select(NSC:S23_7) %>% ggpairs()
@@ -286,11 +286,11 @@ cor(s1, method = "pearson")
 
 ```
 
-Como ya se podia prever, las variables siguen una distibucion lineal, además de tener un alto grado de relacion, esto es normal ya que estamos tratando sonidos de las calles de un barrio y entre estas no hay mucha distancia por lo que tienen que tener una relacion en el sonido.
+Como ya se podía prever, las variables siguen una distibución lineal, además de tener un alto grado de relación, esto es normal ya que estamos tratando sonidos de las calles de un barrio y entre estas no hay mucha distancia por lo que tienen que tener una relación en el sonido.
 
-# Creación de los estadisticos 
+# Creación de los estadísticos 
 
-El primer acercamiento que haremos al análsisi más en profundidad es una tabla de estadísticos (cuartil 25, cuartil 75, media, mediana, longitud, desviación estándard, sesgo y kurtosis). Estos nos proporcionarán una primera idea de cómo está distribuida más internamente cada variable.
+El primer acercamiento que haremos al análisis más en profundidad es una tabla de estadísticos (cuartil 25, cuartil 75, media, mediana, longitud, desviación estándard, sesgo y kurtosis). Estos nos proporcionarán una primera idea de cómo está distribuida más internamente cada variable.
 
 ```{r}
 tabla <- sonido_tidy %>% select(NSC:S23_7)  %>%
@@ -310,7 +310,7 @@ tabla
 
 ```
 
-La mayoría de ellas siguen valores bastante parecidos, como es lógico, la variable S23_7 (la de la noche) es la que presenta valores más pequeños pero su desviación estándard es la más grande debido al contraste entre las últimas/primeras horas y las horas más "centrales" de la noche. También nos llama la atención que la variable SDTN (sonido día-tarde-noche) es la que toma valores más altos tanto en la media, la mediana como en los cuartiles. Podemos apreciar que el NSC es la que tiene la kurtosis más elevada lo cual nos dice que que la mayoría de los valores están centrados en la media, lo cual tiene mucho sentido ya que es el nivel sonoro continuo.
+La mayoría de ellas siguen valores bastante parecidos, como es lógico, la variable S23_7 (la de la noche) es la que presenta valores más pequeños pero su desviación estándard es la más grande debido al contraste entre las últimas/primeras horas y las horas más "centrales" de la noche. También nos llama la atención que la variable SDTN (sonido día-tarde-noche) es la que toma valores más altos tanto en la media, la mediana como en los cuartiles. Podemos apreciar que el NSC es la que tiene la kurtosis más elevada lo cual nos dice que la mayoría de los valores están centrados en la media, lo cual tiene mucho sentido ya que es el nivel sonoro continuo.
 
 # Preguntas a resolver
 
@@ -380,7 +380,7 @@ tabla
 *Inspeccionando la tabla observamos que el que tiene una media más alta es marzo, aspecto que analizaremos más adelante, además de ser el mes con una mayor desviación estándard. También es de destacar, que a diferencia de las franjas horarias aquí no tenemos el mismo número de observaciones para cada mes, exceptuando Julio, Agosto es el mes del que tenemos menos observaciones.*
 
 
-- **¿Que mes es el más/menos ruidoso?**
+- **¿Qué mes es el más/menos ruidoso?**
 
 Esta pregunta la resolveremos con un gráfico de densidad en el que vamos a representar cada mes con un diagrama y en el eje x el nivel sonoro continuo ya que nos proporciona una media de las franjas horarias.
 
@@ -446,7 +446,7 @@ sonido_anyo %>% group_by(anyo) %>%
   filter(alto == max(alto))
 ```
 
-*Como podemos oobservar el año registrado más ruidoso es el año 2022. Por otro lado, el año registrado menos ruidoso es el año 2020.*
+*Como podemos observar el año registrado más ruidoso es el año 2022. Por otro lado, el año registrado menos ruidoso es el año 2020.*
 
 
 ## Calles
@@ -464,7 +464,7 @@ sonido_tidy %>% group_by(CALLE) %>%
            min(Nivel_sonoro_continuo_medio_minimo))
 ```
 
-*Como podemos observar, la calle mas ruidosa es la calle Cádiz3r otro lado la calle menos ruidosa es la calle general Prim.*
+*Como podemos observar, la calle más ruidosa es la calle Cádiz3 y, por otro lado, la calle menos ruidosa es la calle general Prim.*
 
 
 - **¿Cuál es la calle que ha alcanzado el máximo/mínimo nivel de ruido?**
@@ -483,10 +483,10 @@ sonido_tidy %>%
            min(Nivel_sonoro_continuo_minimo))
 ```
 
-*Como podemos observar, la calle que ha alcanzado el máximo nivel de ruido es la calle Reina Maria. Por otro lado la calle que ha alcanzado el mínimo nivel de ruido es la calle general Prim.*
+*Como podemos observar, la calle que ha alcanzado el máximo nivel de ruido es la calle Reina María. Por otro lado la calle que ha alcanzado el mínimo nivel de ruido es la calle general Prim.*
 
 
-- **Las calles que estan cercanas unas de otras tienen una distribucion similar?**
+- **Las calles que están cercanas unas de otras tienen una distribución similar?**
 
 Primero veamos como estan ubicadas en el mapa.
 ![](mapa_mejorado.gif)
@@ -527,12 +527,12 @@ ggplot(cdoctor_cadiz3, aes(x = Fecha, y = NSC,col='red')) +
                              axis.ticks = element_blank())
 ```
 
-*Como podemos observar en las gráficas mostradas, en general la mayor parte de las gráficas coinciden excepto en algunos momentos, sin embargo, si que podemos observar como en esos momentos donde en alguna  gráfica el indice de sonido es mayor o da un repunte, en las otras gráficas también se observa dicho resalto o repunte*
+*Como podemos observar en las gráficas mostradas, en general la mayor parte de las gráficas coinciden excepto en algunos momentos, sin embargo, sí que podemos observar como en esos momentos donde en alguna  gráfica el índice de sonido es mayor o da un repunte, en las otras gráficas también se observa dicho resalto o repunte*
 
 
-## Festvivdad
+## Festividad
 
-Para analizar cómo se comportan los diferentes niveles de ruido durante las festividades asignaremos a cada observación a la festividad que pertenece (navidad o fallas) y si no pertenece a ninguna de ellas, lo llamaremos "ordinario".
+Para analizar cómo se comportan los diferentes niveles de ruido durante las festividades, asignaremos a cada observación a la festividad que pertenece (navidad o fallas) y si no pertenece a ninguna de ellas, lo llamaremos "ordinario".
 ```{r}
 navidad <- sonido_tidy %>%
   select(Fecha) %>%
@@ -569,7 +569,8 @@ ggplot(sonido_tidy_festividad, aes(x = Fecha, y = NSC, col = festividad)) +
 
 ```
 
-*Como podemos observar, las fiestas de navidad tienen una distribucion muy parecida a la ordinal, mientras que en el periodo de fallas crece desmesuramdamente esto es normal ya que, durante el periodo de fallas hay explosiones de petardos además de que aumenta la concentacion de personas en determinadas zonas.*
+*Como podemos observar, las fiestas de navidad tienen una distribución muy parecida a la ordinal, mientras que en el periodo de fallas crece desmesuramdamente. Esto es normal ya que durante el periodo de fallas hay explosiones de petardos además de que aumenta la concentración de personas en determinadas zonas.*
+
 - **¿Cómo aumentan los niveles de ruido durante las fallas?**
 
 ```{r}
@@ -581,14 +582,14 @@ meses %>% filter(mes == "Marzo" & year(Fecha) == 2022) %>%
   geom_hline(yintercept = mean(meses$NSC), lty = 2, col = "red")
 ```
 
-*En los dos tipos de gráficos realizados se puede observar claramente como duarnte el periodo de fallas (tanto en general durante los meses como en los días en concreto del mes de marzo) los niveles sonoros aumentan de forma exponencial.*
+*En los dos tipos de gráficos realizados se puede observar claramente como durante el periodo de fallas (tanto en general durante los meses como en los días en concreto del mes de marzo) los niveles sonoros aumentan de forma exponencial.*
 
 
 ## Casa / Empresa
 
 - **¿Si quisiésemos comprar una casa o montar una empresa en qué lugar nos interesaría más colocarla?**
 
-Para la casa hemos pensado que es conveniente un lugar con poco ruido ya que puede llegar a ser molesto y para la empresa hemos pensado lo contrario ya que un mayor nivel de ruido puede suponer una mayor afluencia de gente lo cual se transmite en posibles clientes.
+Para la casa hemos pensado que es conveniente un lugar con poco ruido ya que puede llegar a ser molesto y para la empresa hemos pensado lo contrario, ya que un mayor nivel de ruido puede suponer una mayor afluencia de gente lo cual se transmite en posibles clientes.
 
 ```{r}
 ggplot(sonido_tidy, aes(x = Fecha, y = NSC,col='blue')) +
@@ -599,9 +600,9 @@ ggplot(sonido_tidy, aes(x = Fecha, y = NSC,col='blue')) +
 
 - Lugar de interés para la casa:
 
-*Como se puede observar las mejores calles a mirar un piso serian Sueca 2 ya que usualmente no es muy ruidosa, además otras calles interesantes a ver serian maesto jose, general prim, puerto 21 o incluso cuba 3 son tambien calles con poco ruido, exceptuando algunos picos que pueden estar relacionados con dias festivos como las fallas.*
+*Como se puede observar la mejor calle a mirar un piso sería Sueca 2 ya que usualmente no es muy ruidosa. Además, otras calles interesantes a ver serían Maestro José, General Prim, Puerto 21 o incluso Cuba 3 pues tienen también poco ruido, exceptuando algunos picos que pueden estar relacionados con días festivos como las fallas.*
 
 - Lugar de interés para la empresa:
 
-*Por el contrario si quisiesemos montar una empresa nos interesaria montarla en las que mas ruido tengan ya que esto significara que estaran más transitadas por personas y ayudara a que se vea mas la marca, entonces nos interesaria montar nuestro negocio en calles como caiz 3, cadiz 16 o carles 32.*
+*Por el contrario si quisiesemos montar una empresa nos interesaría montarla en las que más ruido tengan ya que esto significaría que estarán más transitadas por personas y ayudará a que se vea más la marca, entonces nos interesaría montar nuestro negocio en calles como Cadiz 3, Cadiz 16 o Carles 32.*
 
