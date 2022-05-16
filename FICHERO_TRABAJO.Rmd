@@ -104,6 +104,13 @@ datos <- lapply(datos, FUN = function(x){
   mutate(CALLE = str_remove(string = x, pattern = ".csv"))
 })
 
+```
+
+
+# Unión de los datos en un solo dataframe
+
+Ahora vamos a usar la función bind_rows de la librería 'dplyr' para unir todos los data frames anteriores en uno solo. Esto es posible ya que todos poseen las mismas variables, por tanto, lo que estamos haciendo es unir las observaciones una debajo de otra.
+```{r}
 primero <- datos[[1]]
 for (i in 2:length(datos)){
   primero <- bind_rows(primero, datos[[i]])
@@ -112,10 +119,10 @@ sonido_tidy <- primero
 
 ```
 
-# Unión de los datos en un solo dataframe
 
-Ahora vamos a usar la función bind_rows de la librería 'dplyr' para unir todos los data frames anteriores en uno solo. Esto es posible ya que todos poseen las mismas variables, por tanto, lo que estamos haciendo es unir las observaciones una debajo de otra.
+# Selección de las variables relevantes
 
+Tan solo nos interesan las variables referentes a las medidas sonoras, fechas y calle donde se mide.
 ```{r}
 sonido_tidy <- sonido_tidy %>% select(6:12)
 head(sonido_tidy)
