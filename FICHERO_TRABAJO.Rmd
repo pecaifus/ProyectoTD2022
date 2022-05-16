@@ -60,8 +60,6 @@ knit_hooks$set(inline = function(x) {
 })
 ```
 
-# Instalación automática de paquetes
-
 
 ```{r echo = F, include = F}
 
@@ -605,4 +603,21 @@ ggplot(sonido_tidy, aes(x = Fecha, y = NSC,col='blue')) +
 - Lugar de interés para la empresa:
 
 *Por el contrario si quisiesemos montar una empresa nos interesaría montarla en las que más ruido tengan ya que esto significaría que estarán más transitadas por personas y ayudará a que se vea más la marca, entonces nos interesaría montar nuestro negocio en calles como Cadiz 3, Cadiz 16 o Carles 32.*
+
+## Aportaciones y conclusiones
+
+Después de haber realizado un exhaustivo análisis de los datos podemos concluir:
+- Que los datos están bien distribuidos, el nivel medio de sonido no supera los 70 dB, que las calles que están juntas, en su mayoría siguen una distribución similar.
+
+
+- También hemos podido comprobar como afectó el COVID y los diferentes periodos festivos a los difentes niveles sonoros.
+
+
+- Como pudimos ver no se puede realizar un análisis perfecto de los datos ya que faltan observaciones del mes de Julio además de faltar las del 2020 y las del 2022.
+
+
+- También hemos podido ver que el año más sonoro ha sido el 2022.
+
+
+- Tras realizar este proyecto hemos aprendido a como enfrentarnos a diefrentes situaciones y resolverlas de distintas formas, aplicando los conceptos trabajados en teoría adaptándolos a nuestro caso.
 
